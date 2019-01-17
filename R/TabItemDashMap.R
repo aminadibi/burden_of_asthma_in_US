@@ -13,8 +13,10 @@ TabItemDashMap <- R6Class(
     # Fields
 
     mainBoxColor = "info",
+    # ValueBox
+    valueBoxChoices = NULL, # titles for value boxes above map
     valueBoxNumber = 4,
-    valueBoxWidths = c(4,4,4,12),
+    valueBoxWidths = c(4,4,4,12), # widths, max = 12
     valueBoxOutputIds = NULL,
     mapOutputId = NULL,
     sliderId = NULL,
@@ -26,7 +28,7 @@ TabItemDashMap <- R6Class(
     mapSettings = NULL,
     numLayers = NULL,
     layerChoices = NULL,
-
+    
     # Constructor
     initialize = function(
       title,
@@ -50,6 +52,7 @@ TabItemDashMap <- R6Class(
       self$numLayers = numLayers
       self$mapSettings = mapSettings
       self$layerChoices = layerChoices
+      self$valueBoxChoices = c(layerChoices,c("Total for "="total"))
     },
 
     tabItem = function(){
@@ -59,9 +62,9 @@ TabItemDashMap <- R6Class(
           status=self$mainBoxColor,
         # TabBox --> ValueBoxOutput
           lapply(1:self$valueBoxNumber, function(i){
-            boxId = self$boxIds[i]
-            valueBoxOutput(boxId, self$valueBoxWidths[i])
+            boxId = self$valueBoxOutputIds[i]
             self$outputIds = c(self$outputIds, boxId)
+            valueBoxOutput(boxId, self$valueBoxWidths[i])
           }),
 
         # AppBrick --> MapBrick

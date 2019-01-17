@@ -14,7 +14,9 @@ setClass(
     tab_settings = "list",
     tab_inout = "list",
     tab_input = "list",
-    tabItemsList = "list"
+    tabItemsList = "list",
+    colorScheme = "character",
+    valueBoxIcons = "list"
   ),
   prototype = list(
 

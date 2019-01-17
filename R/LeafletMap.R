@@ -29,6 +29,12 @@ LeafletMap <- R6Class(
     dense = NULL,
     legendLabels = NULL,
     prefix=NULL, # prefix on data
+    rawData = NULL,
+    layerIds = NULL, # ids for regions to be used in map_shape_click
+    numRegions = NULL, # number of regions e.g. number of provinces
+    regionNames = NULL, # names of the regions e.g. Alberta
+    maxOverYears = NULL,
+    minOverYears = NULL,
     
     # Constructor
     initialize = function(
@@ -42,7 +48,8 @@ LeafletMap <- R6Class(
       dense,
       legendLabels,
       plotLabels,
-      prefix
+      prefix,
+      rawData
     ){
       self$basemapFile = basemapFile
       self$countryBaseMap = self$typeCheck(countryBaseMap, "CountryBaseMap")
@@ -55,6 +62,14 @@ LeafletMap <- R6Class(
       self$legendLabels = legendLabels
       self$plotLabels = plotLabels
       self$prefix = prefix
+      self$rawData = rawData
+      self$numRegions = length(countryBaseMap$divisions)
+      self$regionNames = countryBaseMap$divisions
+      self$maxOverYears = rawData$maxOverYears
+      self$minOverYears = rawData$minOverYears
+      self$createMapLayers()
+      self$makeLayerIds()
+      
       #self$mapLayerList = self$typeCheck(mapLayerList, "MapLayer", isList = TRUE)
     },
     
@@ -95,32 +110,77 @@ LeafletMap <- R6Class(
     },
     
     drawMap = function(
-      rawData, ...
+      year
     ){
-      data <- rawData$allData
-      data <- rawData$subsetData(data, ...)
       m <- leaflet(options=leafletOptions(zoomControl=FALSE),
                    width="50%") %>% setView(lng = -100, lat = 60, zoom = 3)%>%
         addTiles(group="basemap")
-      for(i in 1:self$numLayers){
-        # mapLayer <- mapLayerList[[i]]
-        # data[[mapLayer$valueName]] = as.numeric(as.character(data[[mapLayer$valueName]]))
-        # data$value = data[[mapLayer$valueName]]
+      i = 1
+      for(valueName in self$layerChoices){
+        if(i==1){
+          initLayer = TRUE
+        } else {
+          initLayer = FALSE
+        }
+         mapLayer <- self$mapLayerList[[i]]
+         valueName = mapLayer$valueName
+        regions = self$countryBaseMap$regions
+        regions$value = self$rawData$annualSums[[year]][[valueName]]$value
+        minYear = self$minOverYears[[valueName]]
+        maxYear = self$maxOverYears[[valueName]]
+        pal <- leaflet::colorNumeric(
+          mapLayer$pal,
+          domain = range(minYear, maxYear),
+          na.color="grey")
 
-      
-      m <- m %>% addPolygons(data=self$countryBaseMap$regions, opacity=0.5, fillOpacity=0.8, group=1,
-                             color="white", weight=0.8, fillColor="blue",layerId = 'test',
+      m <- m %>% addPolygons(data=regions, opacity=0.5, fillOpacity=0.8, group=mapLayer$group,
+                             color="white", weight=0.8, fillColor=~pal(value), layerId = self$layerIds[[i]],
                              highlightOptions = highlightOptions(
                                color = "white", opacity = 1, weight = 2, fillOpacity = 1,
-                               bringToFront = TRUE, sendToBack = TRUE)) 
+                               bringToFront = TRUE, sendToBack = TRUE, dashArray=NULL)) %>%
+        addLegend("bottomleft", pal = pal, values=c(minYear, maxYear),
+                title = self$groups[i], group=self$groups[i],
+                opacity = 1, na.label="No Data", labFormat = myLabFormat(prefix="$ ",
+                                                                         digits=-5),
+                layerId=self$regionNames, initLayer = initLayer)
+      i = i+1
       }
+      m <- m %>% addLayersControl(baseGroups = c(self$groups),
+                                  options = layersControlOptions(collapsed=FALSE)) %>% 
+                 htmlwidgets::onRender(
+                    "function(el, x) {
+                    L.control.zoom({ position: 'topright' }).addTo(this)}") # move zoom control to top right
       return(m)
+      },
+    
+    getLayerValueData = function(
+      layer, valueName, year
+    ){
+      layerValueData = self$rawData$annualSums[[year]][[valueName]]$value
+      return(layerValueData)
+    },
+    
+    makeLayerIds = function(
+      
+    ){
+      layerIds = list()
+      for(layer in 1:self$numLayers){
+        layerId = c()
+        for(region in 1:self$numRegions){
+          id = paste0("layer_", layer, "_region_", region)
+          layerId = c(layerId, id)
+        }
+        layerIds[[layer]] = layerId
       }
+      self$layerIds = layerIds
+      
+    }
     
 
     
     
     
     
-  ))
+  )
+  )
 

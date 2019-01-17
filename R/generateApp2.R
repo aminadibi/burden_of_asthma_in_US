@@ -2,6 +2,7 @@ source("R/MetaData.R")
 source("R/RawData.R")
 source("R/DataSubClass.R")
 source("R/DataSubClassYear.R")
+source("R/DataSubClassState.R")
 source("R/TabItemDashMap.R")
 source("R/TabItemDashGraph.R")
 source("R/TabItemDashText.R")
@@ -11,7 +12,7 @@ source("R/LeafletMap.R")
 dataSubClassNames = c("Year", "State", "Sex", "Age")
 dataSubClasses = list(
   "year"=DataSubClassYear$new(dataSubClassNames[1]),
-  "state"=DataSubClass$new(dataSubClassNames[2]),
+  "state"=DataSubClassState$new(dataSubClassNames[2]),
   "sex"=DataSubClass$new(dataSubClassNames[3]),
   "age"=DataSubClass$new(dataSubClassNames[4])
 )
@@ -24,8 +25,8 @@ tabItemsList = list(
   "tab1" = TabItemDashMap$new(title = "Map",
                               inputId = "tab1",
                               mainBoxColor = "info",
-                              valueBoxNumber = 4,
-                              valueBoxWidths = c(6,6,4,8),
+                              valueBoxNumber = 3,
+                              valueBoxWidths = c(6,6,12),
                               tabNumber = 1,
                               layerChoices = c("Direct Cost"="directCost", "Indirect Cost"="indirectCost"),
                               mapSettings = mapSettings1,
@@ -42,8 +43,8 @@ tabItemsList = list(
   "tab3" = TabItemDashMap$new(title = "Map",
                               inputId = "tab3",
                               mainBoxColor = "info",
-                              valueBoxNumber = 4,
-                              valueBoxWidths = c(6,6,4,8),
+                              valueBoxNumber = 2,
+                              valueBoxWidths = c(6,6),
                               tabNumber = 3,
                               layerChoices = "qalyLost",
                               mapSettings = mapSettings2,
@@ -78,7 +79,7 @@ if(init){
 } else{
   load(filename)
 }
-
+rawData$generateAnnualSums("State", c("directCost", "indirectCost", "qalyLost"))
 leafletMapList <- list(
   "tab1" = LeafletMap$new(basemapFile = "./static_data/canadaMap.RData",
                           countryBaseMap = countryBaseMap,
@@ -90,7 +91,8 @@ leafletMapList <- list(
                           digits = c(-1, -5),
                           dense = c(TRUE, FALSE),
                           legendLabels = c("legend1", "legend2"),
-                          prefix=c("$", "$")),
+                          prefix=c("$", "$"),
+                          rawData = rawData),
   "tab3" = LeafletMap$new(basemapFile = "./static_data/canadaMap.RData",
                           countryBaseMap = countryBaseMap,
                           #palette = c("brewer"="Greens"),
@@ -102,7 +104,8 @@ leafletMapList <- list(
                           digits = c(0),
                           dense = c(TRUE),
                           legendLabels = c("legend3"),
-                          prefix=c("")))
+                          prefix=c(""),
+                          rawData = rawData))
 
 
 
@@ -205,6 +208,7 @@ tab5id <- list("markdownFile"="about.Rmd","imFile"="logos2.png", "label"=c("","l
 metaData = new("MetaData")
 metaData@app_title = "Burden of Asthma in US"
 metaData@tabs = 6
+metaData@colorScheme = "startup"
 metaData@tab_titles <- c("Cost", "QALY", "About", "Terms")
 metaData@tab_ids <- c("tab1", "tab2", "tab3", "tab4", "tab5", "tab6")
 metaData@sidebar = 3
@@ -219,6 +223,7 @@ metaData@tab_inout = list(tab1, tab2, tab3, tab4, tab5, tab6)
 metaData@tab_settings = list(tab1id, tab2id, tab3id, tab4id, tab5id, tab6id)
 metaData@tab_input = list(tab1input, tab2input, tab3input, tab4input, tab5input, tab6input)
 metaData@tabItemsList = tabItemsList
+metaData@valueBoxIcons = list(icon("user", lib="font-awesome"), icon("usd", lib="font-awesome"))
 save(metaData, file="data/metaData.RData")
 save(rawData, file="data/cleanedRawData.RData")
 save(leafletMapList, file="data/leafletMapList.RData")

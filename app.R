@@ -32,6 +32,7 @@ source("./R/AppLayout.R")
 source("./R/DashGraph.R")
 source("./R/LeafletMap.R")
 source("./R/CountryBaseMap.R")
+source("./R/colorSchemes.R")
 
 load(file="./data/metaData.RData")
 load(file="./data/cleanedRawData.RData")
@@ -46,10 +47,6 @@ choices_cost <- list("Total" = "sum",
                      "Outpatient" = "MSP",
                      "Pharma" = "pharm")
 s_tabs = c(2,3)
-colors <- c("olive", "purple", "maroon", "aqua")
-colors <- c("ink", "posy", "embers", "black")
-colors <- c("ink", "steel-blue", "cobalt-blue", "posy")
-iconBox <- list(icon("user", lib="font-awesome"), icon("usd", lib="font-awesome"))
 tab_titles = metaData@tab_titles
 i=1
 appLayout <- AppLayout$new(6, "burdenOfAsthma")
@@ -99,6 +96,7 @@ server <- function(input, output, session) {
   cost_data <- readRDS(cost_data, "./data/cost.rds")
   cost <- cost_data@data
   copdNumber <- read_rds("./data/copdNumber.rds")
+  colorScheme = colorSchemes[[metaData@colorScheme]]
 
 
   dataList <- list("CostDensity"=cost,"Cost"=cost, "copdNumber"=copdNumber)
@@ -109,9 +107,6 @@ server <- function(input, output, session) {
   } else{
     load(filename)
   }
-  group_prev <<- "new"
-  group_prev2 <<- "new"
-
 
   observe({
     #sout("Selected Tab: ", input$selectedTab)
@@ -119,23 +114,6 @@ server <- function(input, output, session) {
     leafletGroups <- selectedTabItem$leafletGroups
     if(!is.null(leafletGroups) && !is.null(input[[leafletGroups]])){
       mapSettings = selectedTabItem$mapSettings
-      sout("test")
-      group = input$map_groups
-      sout("test", group)
-      sout(input$map_groups_baselayerchange)
-      group = group[-which(group=="basemap")]
-      print(length(group))
-      if(length(group)==1){
-        group_prev <<- group
-        print(group_prev)
-      }else{
-        group = c(setdiff(group_prev, group), setdiff(group, group_prev))
-        group_prev <<- group
-      }
-      g = which(mapSettings$groups!=group)
-
-      proxy = leafletProxy("map")
-      proxy %>% hideGroup(mapSettings$groups[g])
     }
 
      if(tabItemsList[[input$selectedTab]]$title=="Graph"){
@@ -164,7 +142,7 @@ server <- function(input, output, session) {
     lapply(1:length(outputTypes), function(k){
 
       outputType = outputTypes[k]
-      
+      # Plotly Graph
       if(outputType=="plotlyOutput"){
         sout("~~~ Plotly Graph ~~~")
         outputId = tabItemDash$graphOutputId
@@ -205,15 +183,18 @@ server <- function(input, output, session) {
           })
           p()
         })
-      } else if(outputType=="downloadOutput"){
+      } 
+      # Download
+      else if(outputType=="downloadOutput"){
         sout("~~~ Download ~~~")
         output[[settings$label[k]]] <- downloadHandler(
           filename = function(){
             paste(settings$png_name, Sys.Date(), ".png", sep="")},
           content = function(file) {
             ggsave(file, device="png", width=11, height=8.5)})
-      } else if(outputType=="imageOutput"){
-        sout(tabItemDash$imageId)
+      } 
+      # Image Output
+      else if(outputType=="imageOutput"){
         output[[tabItemDash$imageId]] <- renderImage({
           width  <- session$clientData$output_logos_width
           height <- session$clientData$output_logos_height
@@ -224,36 +205,27 @@ server <- function(input, output, session) {
                alt = "Logos")
         }, deleteFile = FALSE)
       } 
-      
+      # Leaflet Map
       else if(outputType=="leafletOutput"){
         cat("~~~ Leaflet Map ~~~", fill=T)
 
         mapOutputId = tabItemDash$mapOutputId
-        sout(mapOutputId)
         p <- reactive({
           selectedTab <- input$selectedTab
           leafletMap <- leafletMapList[[selectedTab]]
           return(leafletMap)
         })
+        year <- 19
 
         output[[mapOutputId]] <- renderLeaflet({
 
           leafletMap <- p()
-          leafletMap$drawMap(rawData)
-
-        #   map$setupMap()
-        #   mapRender <- map$drawMap()
-        #   mapRender <- mapRender %>% htmlwidgets::onRender("function(el, x) {
-        #                                        L.control.zoom({ position: 'topright' }).addTo(this)
-        # }")
-        #   mapRender
-
+          leafletMap$drawMap(year)
       })
         cat("~~~ Setting up Info Boxes ~~~", fill=T)
-        #cat(paste0("Number of Boxes = ", settings$numberOfBoxes), fill=T)
         mapShapeClick <- paste0(mapOutputId, "_shape_click")
         changeLayer <- paste0(mapOutputId, "_groups_baselayerchange")
-        value <- reactiveValues(default = "Alberta", layer=1)
+        value <- reactiveValues(noClickYet = FALSE, layer=1)
         # observe({
         #   selectedTabItem <- tabItemsList[[input$selectedTab]]
         #
@@ -271,40 +243,35 @@ server <- function(input, output, session) {
         #
         # })
         valueBoxOutputIds <- tabItemDash$valueBoxOutputIds
-        sout(valueBoxOutputIds)
         lapply(1:tabItemDash$valueBoxNumber, function(box){
           boxId <- valueBoxOutputIds[box]
-
           observeEvent(input[[mapShapeClick]],{
+            print(input[[mapShapeClick]])
             value$default <- input[[mapShapeClick]]$id
           })
 
-
-        output[[boxId]] <- renderValueBox({
-          valueBox(
-            1,"test", "blue"
-          )
-        })
-        # output[[boxId]] <- renderValueBox({
-        #   if(value$default=="Alberta"){
-        #     layer <- 1
-        #     groupid <- "group11"
+         output[[boxId]] <- renderValueBox({
+           valueName = tabItemDash$valueBoxChoices[box] # column of data to view in box
+           region <- eventReactive(input[[mapShapeClick]],
+                                   ignoreNULL = FALSE, { # update the location selectInput on map clicks
+             input[[mapShapeClick]]$id
+           })
+           layerRegionId <- region()
+           if(is.null(layerRegionId)){
+             layerRegionId <- "layer_1_region_1"
+           } 
         #   } else {
         #       if(length(value$layer)!=1){
         #         layer <- 1
         #       } else{
         #         layer <- value$layer
         #       }
-        #   province <- eventReactive(input[[mapShapeClick]], { # update the location selectInput on map clicks
-        #     input[[mapShapeClick]]$id
-        #   })
-        #     groupid <- province()
-        #
-        #
-        #       #layer <- as.numeric(substr(groupid, 6,6))
-        #
-        #
-        #   }
+            
+            layerRegionId = strsplit(layerRegionId, "_")
+            layerId = as.numeric(layerRegionId[[1]][2])
+            regionId = as.numeric(layerRegionId[[1]][4])
+
+         #}
           # mapDataList <- p()
           # map <- CreateMap$new(layers=mapSettings$layers,
           #            groups = mapSettings$groups, legendLabels=mapSettings$legendLabels,
@@ -312,42 +279,35 @@ server <- function(input, output, session) {
           # map$setupMap()
           # cat("Creating map", fill=T)
 
-          # sout(groupid)
-          #
-          # prov <- as.numeric(substr(groupid,7,9))
-          # print(prov)
+
           # mapLayer <- map$mapDataList[[layer]]
-          # print(mapLayer@costYear)
-          #
-          # print(settings$treatmentType[box])
-          # print(settings$treatmentType)
+
           # typeList <- map$costType(layer, settings$treatmentType[box], TRUE, mapSettings$dense[layer])
-          # print(typeList)
-          # print(settings$treatmentType[box])
-          # if(box==4){
-          #   subtitle = paste0(settings$treatmentTypeTitles[box], typeList$provinces[prov],
-          #                     settings$boxSuffix[layer])
-          # } else{
-          #   subtitle = settings$treatmentTypeTitles[box]
-          # }
+          leafletMap <- p()
+          value <- leafletMap$getLayerValueData(valueName=valueName, year = 19, layer = layerId)
+          regionName = leafletMap$regionNames[regionId]
+          subtitles = names(tabItemDash$valueBoxChoices)
+          if(box==tabItemDash$valueBoxNumber){
+            subtitle = subtitles[box]
+            subtitle = paste0(subtitle, regionName)
+           } else{
+             subtitle = subtitles[box]
+           }
           # if(typeList$labels[prov]==0 || typeList$labels[prov]=="No data"){
           #   value = "No data"
           # } else {
           #   value = paste0(settings$boxPrefix, typeList$labels[prov])
           # }
-          #
-          # valueBox(
-          #   value = value,
-          #   subtitle = subtitle,
-          #   color = colors[box],
-          #   icon = iconBox[[layer]]
-          #
-          # )
-        #})
-        })
-      } else if(outputType=="infoBox"){
 
-      }
+           valueBox(
+             value=value[regionId],
+             subtitle = subtitle,
+             color = colorScheme[box],
+             icon = metaData@valueBoxIcons[[layerId]]
+           )
+        })
+        })
+      } 
       }
         )}
       })

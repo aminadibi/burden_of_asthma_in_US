@@ -15,10 +15,11 @@ MapLayer <- R6Class(
     countryBaseMap = NULL,
     paletteScaleSize = 5,
     group = NULL,
-    prefix = NULL,
+    prefix = NULL, # prefix for legend
     plotLabel = NULL,
-    digits = NULL,
-    valueName = NULL,
+    digits = NULL, # number of digits to round
+    valueName = NULL, # name of column to be plotted
+    pal = NULL, # palette for map
     
     
     # Constructor

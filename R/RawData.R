@@ -14,6 +14,9 @@ RawData <- R6Class(
     allData = NULL,
     reName = NULL,
     reNameIndices = NULL,
+    annualSums = NULL,
+    maxOverYears = NULL,
+    minOverYears = NULL,
 
     # Constructor
     initialize = function(
@@ -49,6 +52,68 @@ RawData <- R6Class(
 
     },
     
+    # REQUIRES: regionName is a string for the column containing regions, i.e. State, Province, County
+    #           valueNames is a list of column names containing the values to be used e.g. indirectCost
+    # MODIFIES: this
+    # EFFECTS: generate the annual total values for each data sub class by region
+    generateAnnualSums = function(regionName, valueNames){
+      years = as.numeric(self$dataSubClasses$year$options)
+      regions = self$dataSubClasses$state$options
+      annualSums = list()
+
+      for(year in years){
+        annualValueSums = list()
+        init = TRUE
+        oneYear = self$subsetData(self$allData, list("Year", year))
+        i = 1
+        for(region in regions){
+        regionYear = self$subsetData(oneYear, list(regionName, region))
+        for(valueName in valueNames){
+          valueSum = sum(as.numeric(regionYear[[valueName]]))
+          if(init){
+            annualValueSum = data.frame(region=regions, value=rep(0, length(regions)))
+            annualValueSums[[valueName]] = annualValueSum
+          }
+          annualValueSums[[valueName]]$value[i] = valueSum
+          
+        }
+        init = FALSE
+        i = i+1
+        }
+        
+        annualSums[[year]] = annualValueSums
+        
+      }
+      self$annualSums = annualSums
+      self$generateAnnualMaxMin(valueNames)
+    },
+    # REQUIRES: valueNames is a list of column names containing the values to be used e.g. indirectCost
+    # MODIFIES: this
+    # EFFECTS: generate the max and min over all years for each column e.g. directCost all years
+    #          use to make map colors
+    generateAnnualMaxMin = function(
+      valueNames
+    ){
+      maxOverYears = list()
+      minOverYears = list()
+      years = as.numeric(self$dataSubClasses$year$options)
+      for(valueName in valueNames){
+        maxOverYears[[valueName]] = 0
+        minOverYears[[valueName]] = min(self$annualSums[[years[1]]][[valueName]]$value)
+        for(year in years){
+          annualSum = self$annualSums[[year]][[valueName]]$value
+          annualSumMax = max(annualSum)
+          annualSumMin = min(annualSum)
+          maxOverYears[[valueName]] = max(maxOverYears[[valueName]], annualSumMax)
+          minOverYears[[valueName]] = min(minOverYears[[valueName]], annualSumMin)
+        }
+      }
+      self$maxOverYears = maxOverYears
+      self$minOverYears = minOverYears
+    },
+    
+    
+    
     # REQUIRES: parameters in the format list("parameter", value)
     # MODIFIES: data
     # EFFECTS: Given a data frame, and a list of parameters to subset,
@@ -72,6 +137,8 @@ RawData <- R6Class(
             indices = indicesArg
             first = FALSE
           }
+        } else {
+          
         }
       }
       indices = unique(indices)
