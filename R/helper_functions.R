@@ -1,3 +1,4 @@
+library(hunspell)
 
 costToMill <- function(cost_vector, char = TRUE){
   figures <- c()
@@ -170,6 +171,8 @@ mapIcons <- function(total, inpatient, outpatient, pharm, province){
   return(iconList)
 }
 
+# EFFECTS: similar to printf in C or System.out.println() in Java
+#          given a set of arguments, print them to the console
 sout <- function(...){
   arguments <- list(...)
   string <- ""
@@ -179,6 +182,37 @@ sout <- function(...){
   cat(string, fill=TRUE)
   
 }
+
+# REQUIRES: wordsToCheck is either a string, or a list of strings
+# EFFECTS: uses hunspell package to check if the word is spelled correctly
+#          return suggested spelling
+spellCheck <- function(wordsToCheck){
+  wordsToCheck = c(wordsToCheck)
+  correctedWords = c()
+  
+  for(word in wordsToCheck){
+    parsedWords = strsplit(word, " ")[[1]]
+    firstWord = TRUE
+    for(parsed in parsedWords){
+      isCorrect = hunspell_check(parsed)
+      if(!isCorrect){
+        parsed = hunspell_suggest(parsed)[[1]][1]
+      }
+      if(firstWord){
+        correctedWord = parsed
+        firstWord = FALSE
+      } else {
+        correctedWord = paste(correctedWord, parsed)
+      }
+    }
+    correctedWords = c(correctedWords, correctedWord)
+  }
+    
+
+  return(correctedWords)
+}
+
+
 
 
 

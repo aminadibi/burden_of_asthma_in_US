@@ -1,7 +1,7 @@
 source('./R/helper_functions.R')
 #source('../R/initialize.R')
 library(R6)
-
+library(hunspell)
 
 
 DataSubClass <- R6Class(

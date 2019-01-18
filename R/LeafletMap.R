@@ -12,6 +12,7 @@ LeafletMap <- R6Class(
   public = list(
     
     # Fields
+    mapName = NULL,
     # Basemap
     basemapFile = NULL, # name for basemap file
     countryBaseMap = NULL,
@@ -35,9 +36,12 @@ LeafletMap <- R6Class(
     regionNames = NULL, # names of the regions e.g. Alberta
     maxOverYears = NULL,
     minOverYears = NULL,
+    maxOverYearsPerCapita = NULL,
+    minOverYearsPerCapita = NULL,
     
     # Constructor
     initialize = function(
+      mapName,
       basemapFile,
       countryBaseMap = NULL,
       numLayers,
@@ -51,6 +55,7 @@ LeafletMap <- R6Class(
       prefix,
       rawData
     ){
+      self$mapName = mapName
       self$basemapFile = basemapFile
       self$countryBaseMap = self$typeCheck(countryBaseMap, "CountryBaseMap")
       self$numLayers = numLayers
@@ -67,6 +72,8 @@ LeafletMap <- R6Class(
       self$regionNames = countryBaseMap$divisions
       self$maxOverYears = rawData$maxOverYears
       self$minOverYears = rawData$minOverYears
+      self$maxOverYearsPerCapita = rawData$maxOverYearsPerCapita
+      self$minOverYearsPerCapita = rawData$minOverYearsPerCapita
       self$createMapLayers()
       self$makeLayerIds()
       
@@ -116,18 +123,21 @@ LeafletMap <- R6Class(
                    width="50%") %>% setView(lng = -100, lat = 60, zoom = 3)%>%
         addTiles(group="basemap")
       i = 1
-      for(valueName in self$layerChoices){
+      for(layerName in self$layerChoices){
         if(i==1){
           initLayer = TRUE
         } else {
           initLayer = FALSE
         }
-         mapLayer <- self$mapLayerList[[i]]
-         valueName = mapLayer$valueName
+        mapLayer <- self$mapLayerList[[i]]
+        mapName = self$mapName
+        valueName = "total"
         regions = self$countryBaseMap$regions
-        regions$value = self$rawData$annualSums[[year]][[valueName]]$value
-        minYear = self$minOverYears[[valueName]]
-        maxYear = self$maxOverYears[[valueName]]
+        upper = paste0("max", layerName)
+        lower = paste0("min", layerName)
+        regions$value = self$rawData$annualSums[[mapName]][[year]][[valueName]]$value
+        minYear = self[[lower]][[mapName]]$total
+        maxYear = self[[upper]][[mapName]]$total
         pal <- leaflet::colorNumeric(
           mapLayer$pal,
           domain = range(minYear, maxYear),
@@ -156,7 +166,7 @@ LeafletMap <- R6Class(
     getLayerValueData = function(
       layer, valueName, year
     ){
-      layerValueData = self$rawData$annualSums[[year]][[valueName]]$value
+      layerValueData = self$rawData$annualSums[[self$mapName]][[year]][[valueName]]$value
       return(layerValueData)
     },
     

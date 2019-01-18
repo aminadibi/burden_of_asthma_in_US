@@ -32,7 +32,12 @@ DataSubClassState <- R6Class(
         
         if(option=="US"){
           
-        }else{
+        }
+        else {
+          if(option=="Colombia"){
+            option = "District of Columbia"
+          }
+          option = spellCheck(option)
           cleanedOptions[i] = option
           i = i + 1
         }

@@ -8,6 +8,7 @@ source("R/TabItemDashGraph.R")
 source("R/TabItemDashText.R")
 source("R/settings.R")
 source("R/LeafletMap.R")
+source("R/CensusDataUS.R")
 
 dataSubClassNames = c("Year", "State", "Sex", "Age")
 dataSubClasses = list(
@@ -21,6 +22,8 @@ fileName = paste0("static_data/WEBAPP_US.csv")
 reNameIndices = c(5,6,7)
 reName = c("indirectCost", "directCost", "qalyLost")
 rawData = RawData$new(fileName, dataSubClasses, reNameIndices, reName)
+censusData = CensusDataUS$new("US", 2017)
+rawData$addCensusData(censusData)
 tabItemsList = list(
   "tab1" = TabItemDashMap$new(title = "Map",
                               inputId = "tab1",
@@ -79,13 +82,15 @@ if(init){
 } else{
   load(filename)
 }
-rawData$generateAnnualSums("State", c("directCost", "indirectCost", "qalyLost"))
+rawData$generateAnnualSums("State", c("directCost", "indirectCost"), "mapOne")
+rawData$generateAnnualSums("State", c("qalyLost"), "mapThree")
 leafletMapList <- list(
-  "tab1" = LeafletMap$new(basemapFile = "./static_data/canadaMap.RData",
+  "tab1" = LeafletMap$new(mapName = "mapOne",
+                          basemapFile = "./static_data/canadaMap.RData",
                           countryBaseMap = countryBaseMap,
                           palette = c("custom"="custom", "custom"="custom"),
                           numLayers = 2,
-                          layerChoices = c("Direct Cost"="directCost", "Indirect Cost"="indirectCost"),
+                          layerChoices = c("Cost Per Capita"="OverYearsPerCapita", "Overall Cost"="OverYears"),
                           groups = c("Cost per Capita","Overall Cost"),
                           plotLabels = c("Cost/Person: $", "Cost: $"),
                           digits = c(-1, -5),
@@ -93,7 +98,8 @@ leafletMapList <- list(
                           legendLabels = c("legend1", "legend2"),
                           prefix=c("$", "$"),
                           rawData = rawData),
-  "tab3" = LeafletMap$new(basemapFile = "./static_data/canadaMap.RData",
+  "tab3" = LeafletMap$new(mapName = "mapThree",
+                          basemapFile = "./static_data/canadaMap.RData",
                           countryBaseMap = countryBaseMap,
                           #palette = c("brewer"="Greens"),
                           palette = c("custom"="custom"),
