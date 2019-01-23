@@ -36,8 +36,6 @@ LeafletMap <- R6Class(
     regionNames = NULL, # names of the regions e.g. Alberta
     maxOverYears = NULL,
     minOverYears = NULL,
-    maxOverYearsPerCapita = NULL,
-    minOverYearsPerCapita = NULL,
     
     # Constructor
     initialize = function(
@@ -72,8 +70,6 @@ LeafletMap <- R6Class(
       self$regionNames = countryBaseMap$divisions
       self$maxOverYears = rawData$maxOverYears
       self$minOverYears = rawData$minOverYears
-      self$maxOverYearsPerCapita = rawData$maxOverYearsPerCapita
-      self$minOverYearsPerCapita = rawData$minOverYearsPerCapita
       self$createMapLayers()
       self$makeLayerIds()
       
@@ -116,6 +112,8 @@ LeafletMap <- R6Class(
       self$mapLayerList <- mapLayerList
     },
     
+    # REQUIRES: year is an integer in the valid range
+    # EFFECTS: renders the map for that year
     drawMap = function(
       year
     ){
@@ -133,11 +131,9 @@ LeafletMap <- R6Class(
         mapName = self$mapName
         valueName = "total"
         regions = self$countryBaseMap$regions
-        upper = paste0("max", layerName)
-        lower = paste0("min", layerName)
-        regions$value = self$rawData$annualSums[[mapName]][[year]][[valueName]]$value
-        minYear = self[[lower]][[mapName]]$total
-        maxYear = self[[upper]][[mapName]]$total
+        regions$value = self$rawData$annualSums[[mapName]][[layerName]][[year]][[valueName]]$value
+        minYear = self$minOverYears[[mapName]][[layerName]]$total
+        maxYear = self$maxOverYears[[mapName]][[layerName]]$total
         pal <- leaflet::colorNumeric(
           mapLayer$pal,
           domain = range(minYear, maxYear),
@@ -163,10 +159,15 @@ LeafletMap <- R6Class(
       return(m)
       },
     
+    # REQUIRES: layerName is string, e.g. overall or perCapita
+    #           valueName is name of column queried, e.g. directCost
+    #           year is an integer within valid years
+    # EFFECTS:  gets the data for the given layer, year, and value type
+    #           to present in the valueBox
     getLayerValueData = function(
-      layer, valueName, year
+      layerName, valueName, year
     ){
-      layerValueData = self$rawData$annualSums[[self$mapName]][[year]][[valueName]]$value
+      layerValueData = self$rawData$annualSums[[self$mapName]][[layerName]][[year]][[valueName]]$value
       return(layerValueData)
     },
     

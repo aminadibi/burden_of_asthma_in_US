@@ -107,6 +107,7 @@ TabItemDashGraph <- R6Class(
         tabName = self$inputId,
         # Box Container
         box(solidHeader=FALSE,
+            width = 12,
             status=self$mainBoxColor,
             sidebarLayout(
               # Sidebar Inputs for Graph

@@ -25,7 +25,7 @@ DashGraph <- R6Class(
 
     drawGraph = function(rawData, valueName, ...){
 
-      data <- rawData$allData
+      data <- rawData$cleanedData
       data <- rawData$subsetData(data, ...)
       first = TRUE
       for(dataSubClassName in self$dataSubClassNames){
@@ -36,7 +36,7 @@ DashGraph <- R6Class(
           Legend <- interaction(Legend, data[[dataSubClassName]], sep=" ")
         }
       }
-
+      #print(Legend)
       data$Legend <- Legend
       data[[valueName]] = as.numeric(as.character(data[[valueName]]))
       data$value = data[[valueName]]

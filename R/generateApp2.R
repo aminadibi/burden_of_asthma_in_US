@@ -11,19 +11,22 @@ source("R/LeafletMap.R")
 source("R/CensusDataUS.R")
 
 dataSubClassNames = c("Year", "State", "Sex", "Age")
+totalNames = c("20Year", "US", "Allsex", "Allage")
 dataSubClasses = list(
-  "year"=DataSubClassYear$new(dataSubClassNames[1]),
-  "state"=DataSubClassState$new(dataSubClassNames[2]),
-  "sex"=DataSubClass$new(dataSubClassNames[3]),
-  "age"=DataSubClass$new(dataSubClassNames[4])
+  "year"=DataSubClassYear$new(dataSubClassNames[1], totalNames[1]),
+  "state"=DataSubClassState$new(dataSubClassNames[2], totalNames[2]),
+  "sex"=DataSubClass$new(dataSubClassNames[3], totalNames[3]),
+  "age"=DataSubClass$new(dataSubClassNames[4], totalNames[4])
 )
 
 fileName = paste0("static_data/WEBAPP_US.csv")
 reNameIndices = c(5,6,7)
 reName = c("indirectCost", "directCost", "qalyLost")
-rawData = RawData$new(fileName, dataSubClasses, reNameIndices, reName)
+
+rawData = RawData$new(fileName, dataSubClasses, reNameIndices, reName, totalNames)
 censusData = CensusDataUS$new("US", 2017)
 rawData$addCensusData(censusData)
+rawData$fixCellValues("Total", "Allage", "Age")
 tabItemsList = list(
   "tab1" = TabItemDashMap$new(title = "Map",
                               inputId = "tab1",
@@ -82,19 +85,19 @@ if(init){
 } else{
   load(filename)
 }
-rawData$generateAnnualSums("State", c("directCost", "indirectCost"), "mapOne")
-rawData$generateAnnualSums("State", c("qalyLost"), "mapThree")
+rawData$generateAnnualSums("State", c("directCost", "indirectCost"), "mapOne", c("overall", "perCapita"))
+rawData$generateAnnualSums("State", c("qalyLost"), "mapThree", c("overall"))
 leafletMapList <- list(
   "tab1" = LeafletMap$new(mapName = "mapOne",
                           basemapFile = "./static_data/canadaMap.RData",
                           countryBaseMap = countryBaseMap,
                           palette = c("custom"="custom", "custom"="custom"),
                           numLayers = 2,
-                          layerChoices = c("Cost Per Capita"="OverYearsPerCapita", "Overall Cost"="OverYears"),
-                          groups = c("Cost per Capita","Overall Cost"),
-                          plotLabels = c("Cost/Person: $", "Cost: $"),
-                          digits = c(-1, -5),
-                          dense = c(TRUE, FALSE),
+                          layerChoices = c("Overall Cost"="overall","Cost Per Capita"="perCapita"),
+                          groups = c("Overall Cost","Cost per Capita"),
+                          plotLabels = c("Cost: $","Cost/Person: $"),
+                          digits = c(-5, -1),
+                          dense = c(FALSE, TRUE),
                           legendLabels = c("legend1", "legend2"),
                           prefix=c("$", "$"),
                           rawData = rawData),
@@ -104,9 +107,9 @@ leafletMapList <- list(
                           #palette = c("brewer"="Greens"),
                           palette = c("custom"="custom"),
                           numLayers = 1,
-                          layerChoices = "qalyLost",
-                          groups = c("Number of COPD"),
-                          plotLabels = c("COPD Cases per Year: "),
+                          layerChoices = c("QALY Lost"="overall"),
+                          groups = c("QALY Lost"),
+                          plotLabels = c("QALY Lost: "),
                           digits = c(0),
                           dense = c(TRUE),
                           legendLabels = c("legend3"),

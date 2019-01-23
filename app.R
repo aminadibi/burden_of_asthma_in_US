@@ -162,13 +162,10 @@ server <- function(input, output, session) {
             print(count)
             for(i in 1:length(dataSubClassNames)){
               shown = selectedTabItem$sidebarShownIds[i]
-              hidden = selectedTabItem$sidebarHiddenIds[i]
-              sout(input[[shown]])
-              print(input[[hidden]])
-              if(input[[shown]]=="All"){
-                
-              } else if(input[[shown]]=="Select" && !is.null(input[[hidden]])){
-                sout(hidden)
+              hidden = selectedTabItem$sidebarHiddenBoxIds[i]
+              if(input[[shown]]=="All" || is.null(input[[hidden]])){
+                arguments[[count]] <- list(dataSubClassNames[i], "total")
+              } else if(input[[shown]]=="Select"){
                 arguments[[count]] <- list(dataSubClassNames[i], input[[hidden]])
               }
               count = count+1
@@ -176,6 +173,7 @@ server <- function(input, output, session) {
             }
             arguments[[1]] <- rawData
             arguments[[2]] <- dropdownSelected
+            print(dropdownSelected)
             print(arguments)
             do.call(dashGraph$drawGraph, args = arguments)
             # dashGraph$drawGraph(rawData, dropdownSelected, list("Year", 19), list("Sex", "Female"),

@@ -20,11 +20,12 @@ DataSubClassState <- R6Class(
       super$initialize(name, options)
     },
     
+    # REQUIRES: keywordsToRemove is a vector of options to remove, e.g. c("Total", "AllSex")
     # EFFECTS: amends the data
     # @Override
-    cleanData = function(options){
+    cleanData = function(options, keywordsToRemove = NULL){
       i = 1
-      super$cleanData(options)
+      super$cleanData(options, keywordsToRemove)
       superOptions = self$options
       cleanedOptions = c()
       sout("~~~ Cleaning Data ~~~")
