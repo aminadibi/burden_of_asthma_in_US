@@ -46,6 +46,25 @@ DataSubClassState <- R6Class(
       self$options = cleanedOptions
       
       
+    },
+    
+    fixSpelling = function(options) {
+      i = 1
+      cleanedOptions = c()
+      for(option in options) {
+        if(option=="US" || option==""){
+          cleanedOptions[i] = option
+          i = i + 1
+        } else {
+          if(option=="Colombia"){
+            option = "District of Columbia"
+          }
+          option = spellCheck(option)
+          cleanedOptions[i] = option
+          i = i + 1
+        }
+      }
+      return(cleanedOptions)
     }
     
     

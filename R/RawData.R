@@ -49,7 +49,10 @@ RawData <- R6Class(
         dataSubClass$data = data
         sout("Getting data from", className)
         options = levels(data)
-        dataSubClass$cleanData(options, self$keywordsToRemove)
+        fixedOptions = dataSubClass$fixSpelling(options)
+        levels(data) = fixedOptions
+        dataSubClass$cleanData(fixedOptions, self$keywordsToRemove)
+        self$allData[[className]] = data
       }
       if(!is.null(self$reName)){
         dataNames = names(self$allData)

@@ -43,6 +43,12 @@ DataSubClass <- R6Class(
         
       }
       self$options = cleanedOptions
+    },
+    
+    # EFFECTS: given the options (levels), correct the spelling
+    #          returns options with fixed spelling
+    fixSpelling = function(options) {
+      return(options)
     }
 
 
