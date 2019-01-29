@@ -25,7 +25,6 @@ library(leaflet)
 source("./R/Cost.R")
 source("./R/Census.R")
 source("./R/MapData.R")
-source("./R/CreateMap.R")
 source("./R/MetaData.R")
 source("./R/helper_functions.R")
 source("./R/AppLayout.R")
@@ -41,11 +40,6 @@ print(metaData)
 
 # Left Sidebar
 
-rids <- c("radioGender", "radioAgeGroup", "radioProvinces")
-choices_cost <- list("Total" = "sum",
-                     "Inpatient" = "hosp",
-                     "Outpatient" = "MSP",
-                     "Pharma" = "pharm")
 s_tabs = c(2,3)
 tab_titles = metaData@tab_titles
 i=1
@@ -61,17 +55,17 @@ ui <- dashboardPage(skin=appLayout$dashboardColour,
   # sidebar
   dashboardSidebar(
     sidebarMenu(id="selectedTab",
-      menuItem(metaData@tab_titles[1], tabName = "costTab", icon = icon("dollar sign", lib="font-awesome"),
-               menuSubItem("Map", tabName="tab1",icon=icon("globe americas", lib="font-awesome")),
-               menuSubItem("Graph", tabName="tab2", icon=icon("bar-chart", lib="font-awesome"))),
+      menuItem(tab_titles[1], tabName = "costTab", icon = icon("dollar sign", lib="font-awesome"),
+               menuSubItem("Map", tabName=metaData@tab_ids[1],icon=icon("globe americas", lib="font-awesome")),
+               menuSubItem("Graph", tabName=metaData@tab_ids[2], icon=icon("bar-chart", lib="font-awesome"))),
 
-      menuItem(metaData@tab_titles[2], tabName = "qalyTab", icon = icon("sort numeric up", lib="font-awesome"),
+      menuItem(tab_titles[2], tabName = "qalyTab", icon = icon("sort numeric up", lib="font-awesome"),
                menuSubItem("Map", tabName="tab3",icon=icon("globe americas", lib="font-awesome")),
                menuSubItem("Graph", tabName="tab4",icon=icon("bar-chart", lib="font-awesome"))),
 
 
-      menuItem(metaData@tab_titles[3], tabName = "tab5", icon = icon("address-book", lib="font-awesome")),
-      menuItem(metaData@tab_titles[4], tabName = "tab6", icon = icon("balance-scale", lib="font-awesome"))
+      menuItem(tab_titles[3], tabName = "tab5", icon = icon("address-book", lib="font-awesome")),
+      menuItem(tab_titles[4], tabName = "tab6", icon = icon("balance-scale", lib="font-awesome"))
     )
   ),
   # body
@@ -92,14 +86,7 @@ server <- function(input, output, session) {
 
   tabItemsList = metaData@tabItemsList
   cat("~~~ Starting server ~~~", fill=T)
-  cost_data <- new("costData")
-  cost_data <- readRDS(cost_data, "./data/cost.rds")
-  cost <- cost_data@data
-  copdNumber <- read_rds("./data/copdNumber.rds")
   colorScheme = colorSchemes[[metaData@colorScheme]]
-
-
-  dataList <- list("CostDensity"=cost,"Cost"=cost, "copdNumber"=copdNumber)
   filename = "./static_data/USMap.RData"
   init=TRUE
   if(init){
@@ -142,7 +129,7 @@ server <- function(input, output, session) {
     lapply(1:length(outputTypes), function(k){
 
       outputType = outputTypes[k]
-      # Plotly Graph
+      # OutputType 0: Plotly Graph
       if(outputType=="plotlyOutput"){
         sout("~~~ Plotly Graph ~~~")
         outputId = tabItemDash$graphOutputId
@@ -182,7 +169,7 @@ server <- function(input, output, session) {
           p()
         })
       } 
-      # Download
+      # OutputType 1: Download
       else if(outputType=="downloadOutput"){
         sout("~~~ Download ~~~")
         output[[settings$label[k]]] <- downloadHandler(
@@ -191,7 +178,7 @@ server <- function(input, output, session) {
           content = function(file) {
             ggsave(file, device="png", width=11, height=8.5)})
       } 
-      # Image Output
+      # OutputType 2: Image Output
       else if(outputType=="imageOutput"){
         output[[tabItemDash$imageId]] <- renderImage({
           width  <- session$clientData$output_logos_width
@@ -203,7 +190,7 @@ server <- function(input, output, session) {
                alt = "Logos")
         }, deleteFile = FALSE)
       } 
-      # Leaflet Map
+      # OutputType 3: Leaflet Output
       else if(outputType=="leafletOutput"){
         cat("~~~ Leaflet Map ~~~", fill=T)
 
@@ -309,74 +296,6 @@ server <- function(input, output, session) {
       }
         )}
       })
-
-
-
-  n_copd_plot <- function(){
-    if (input$radioGender2 == "All") {
-      genderCheck <- "all genders"
-    } else {
-      genderCheck <- input$Gender2
-    }
-
-    if (input$radioAgeGroup2 == "All") {
-      ageGroupCheck <- "all ages"
-    } else {
-      ageGroupCheck <- input$AgeGroup2
-    }
-
-    if (input$radioProvinces2 == "All") {
-      provinceCheck <- "Canada"
-    } else {
-      provinceCheck <- input$Provinces2
-    }
-    copdNumber$Legend <- interaction(copdNumber$province, copdNumber$gender, copdNumber$age, sep=" ")
-    p <- ggplot(subset (copdNumber, ((gender %in% genderCheck) & (age %in% ageGroupCheck) & (province %in% provinceCheck))), aes(x = Year, y=value, color = Legend)) +
-      geom_point() + geom_line() + theme_bw() + labs(x="Year", y="") +
-      scale_y_continuous("\n", labels = comma)
-
-    ggplotly (p) %>% config(displaylogo=F, doubleClick=F,  displayModeBar=F, modeBarButtonsToRemove=buttonremove) %>% layout(xaxis=list(fixedrange=TRUE)) %>% layout(yaxis=list(fixedrange=TRUE))
-
-  }
-
-  getMapData <- function(mapSettings){
-
-    genderCheck <- "all genders"
-    ageGroupCheck <- "all ages"
-    yearCheck <- input$sliderYear
-    noType <- TRUE
-
-    mapDataList <- mapSettings$mapDataList
-    for(i in 1:mapSettings$layers){
-      data <- dataList[[i]]
-      mapLayer <- MapLayer$new(
-        digits = mapSettings$digits[i],
-        group=mapSettings$groups[i],
-        prefix = mapSettings$prefix[i],
-        plotLabel=mapSettings$plotLabels[i], 
-        palette=mapSettings$palette[i],
-        countryBaseMap = countryBaseMap
-      )
-      costAll  <- subset(data, ((gender %in% genderCheck) & (age %in% ageGroupCheck) &(province!="Canada")))
-      costYear  <- subset(data, ((gender %in% genderCheck) & (age %in% ageGroupCheck) & (Year %in% yearCheck)))
-
-      if("type" %in% colnames(data)){
-        mapData@costAll <- subset(costAll, ((type %in% "sum")))
-        mapData@costYear <- subset(costYear, ((type %in% "sum")))
-        mapData@costYearNoType <- costYear
-        mapData@types <- TRUE
-        mapData@typesList <- c("sum", "hosp", "MSP", "pharm")
-      } else {
-        mapData@costAll <- costAll
-        mapData@costYear <- costYear
-      }
-
-      mapData <- getCostDensity(mapData, mapSettings$dense[i])
-
-      mapDataList[[i]] <- mapData
-    }
-    return(mapLayerList)
-  }
 
 
 

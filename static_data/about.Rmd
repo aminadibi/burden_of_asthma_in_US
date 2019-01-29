@@ -6,21 +6,21 @@ output: html_document
 
 #### About 
 
-This web application provides an interactive interface to explore the predicted burden of COPD in Canada, both in terms of the number of people affected and the cost. 
+This web application provides an interactive interface to explore the predicted burden of asthma in the United States, both in terms of the quality of life reduction in patients, and the associated medical costs. 
 Please refer to the manuscript for more details on the structure of the model and the validation process.
 
 #### Citation
 
 Please cite this paper when using the results of this web application:
 
-```Khakban et al. Burden of COPD in Canada```
+```Khakban et al. Burden of Asthma in the U.S.```
 
 #### Bug Report
 
-Please report bugs and issues [here] (https://github.com/aminadibi/burden_of_COPD/issues).
+Please report bugs and issues [here] (https://github.com/ahill187/burden_of_asthma_in_US/issues).
 
                          
 #### Credits
 
-Burden of COPD is created by [Amin Adibi](http://resp.core.ubc.ca/team/Amin_Adibi), [Amir Khakban](http://resp.core.ubc.ca/team/Amir_Khakban), [Ainsleigh Hill] (http://resp.core.ubc.ca/team), and [Mohsen Sadatsafavi](http://resp.core.ubc.ca/team/Mohsen_Sadatsafavi) at the University of British Columbia. 
+Burden of Asthma is created by [Ainsleigh Hill] (http://resp.core.ubc.ca/team), [Amin Adibi](http://resp.core.ubc.ca/team/Amin_Adibi), [Amir Khakban](http://resp.core.ubc.ca/team/Amir_Khakban), , and [Mohsen Sadatsafavi](http://resp.core.ubc.ca/team/Mohsen_Sadatsafavi) at the University of British Columbia. 
 
