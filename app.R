@@ -49,7 +49,7 @@ cat("~~~ Starting UI ~~~", fill=T)
 
 
 ui <- dashboardPage(skin=appLayout$dashboardColour,
-
+                    
   # header
   dashboardHeader(title=metaData@app_title, titleWidth=320),
   # sidebar
@@ -70,10 +70,14 @@ ui <- dashboardPage(skin=appLayout$dashboardColour,
   ),
   # body
   dashboardBody(asList = T,
+                tags$head(tags$script(type="text/javascript", src="https://www.gstatic.com/charts/loader.js")),
+                tags$head(tags$script(type="text/javascript", src="jsfunctions.js")),
     shinyjs::useShinyjs(),
-
+    #shinyjs::extendShinyjs(text=jscode),
+    #shinyjs::extendShinyjs(script="./R/jsfunctions.js"),
+    
     tabItems(asList = T,
-
+             
             lapply(1:metaData@tabs, function(i){
               metaData@tabItemsList[[i]]$tabItem()
             }))
@@ -83,7 +87,10 @@ ui <- dashboardPage(skin=appLayout$dashboardColour,
 
 
 server <- function(input, output, session) {
-
+  
+  shinyjs::showLog()
+  #shinyjs::js$getProfileData()
+  #shinyjs::js$drawSeriesChart()
   tabItemsList = metaData@tabItemsList
   cat("~~~ Starting server ~~~", fill=T)
   colorScheme = colorSchemes[[metaData@colorScheme]]
@@ -208,6 +215,7 @@ server <- function(input, output, session) {
           leafletMap$drawMap(year)
       })
         cat("~~~ Setting up Info Boxes ~~~", fill=T)
+        
         mapShapeClick <- paste0(mapOutputId, "_shape_click")
         changeLayer <- paste0(mapOutputId, "_groups_baselayerchange")
         value <- reactiveValues(noClickYet = FALSE, layer=1)
@@ -255,17 +263,6 @@ server <- function(input, output, session) {
             layerRegionId = strsplit(layerRegionId, "_")
             layerId = as.numeric(layerRegionId[[1]][2])
             regionId = as.numeric(layerRegionId[[1]][4])
-
-         #}
-          # mapDataList <- p()
-          # map <- CreateMap$new(layers=mapSettings$layers,
-          #            groups = mapSettings$groups, legendLabels=mapSettings$legendLabels,
-          #            mapDataList=mapDataList)
-          # map$setupMap()
-          # cat("Creating map", fill=T)
-
-
-          # mapLayer <- map$mapDataList[[layer]]
 
           # typeList <- map$costType(layer, settings$treatmentType[box], TRUE, mapSettings$dense[layer])
           leafletMap <- p()
