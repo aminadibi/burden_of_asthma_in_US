@@ -6,7 +6,7 @@
 #
 #    http://shiny.rstudio.com/
 #
-
+library(googleCharts)
 library(shiny)
 library(shinythemes)
 library(shinydashboard2)
@@ -49,7 +49,7 @@ cat("~~~ Starting UI ~~~", fill=T)
 
 
 ui <- dashboardPage(skin=appLayout$dashboardColour,
-                    
+
   # header
   dashboardHeader(title=metaData@app_title, titleWidth=320),
   # sidebar
@@ -75,9 +75,9 @@ ui <- dashboardPage(skin=appLayout$dashboardColour,
     shinyjs::useShinyjs(),
     #shinyjs::extendShinyjs(text=jscode),
     #shinyjs::extendShinyjs(script="./R/jsfunctions.js"),
-    
+
     tabItems(asList = T,
-             
+
             lapply(1:metaData@tabs, function(i){
               metaData@tabItemsList[[i]]$tabItem()
             }))
@@ -87,7 +87,7 @@ ui <- dashboardPage(skin=appLayout$dashboardColour,
 
 
 server <- function(input, output, session) {
-  
+
   shinyjs::showLog()
   #shinyjs::js$getProfileData()
   #shinyjs::js$drawSeriesChart()
@@ -140,6 +140,9 @@ server <- function(input, output, session) {
       if(outputType=="plotlyOutput"){
         sout("~~~ Plotly Graph ~~~")
         outputId = tabItemDash$graphOutputId
+        output[[paste0(outputId, "test")]] = renderGoogleChart({
+          googleChart("testing")
+        })
         output[[outputId]]<- renderPlotly({
           sout("~~~ Making Graph ~~~")
           dataSubClassNames = c("Year", "State", "Sex", "Age")
@@ -163,7 +166,7 @@ server <- function(input, output, session) {
                 arguments[[count]] <- list(dataSubClassNames[i], input[[hidden]])
               }
               count = count+1
-              
+
             }
             arguments[[1]] <- rawData
             arguments[[2]] <- dropdownSelected
@@ -175,7 +178,7 @@ server <- function(input, output, session) {
           })
           p()
         })
-      } 
+      }
       # OutputType 1: Download
       else if(outputType=="downloadOutput"){
         sout("~~~ Download ~~~")
@@ -184,7 +187,7 @@ server <- function(input, output, session) {
             paste(settings$png_name, Sys.Date(), ".png", sep="")},
           content = function(file) {
             ggsave(file, device="png", width=11, height=8.5)})
-      } 
+      }
       # OutputType 2: Image Output
       else if(outputType=="imageOutput"){
         output[[tabItemDash$imageId]] <- renderImage({
@@ -196,7 +199,7 @@ server <- function(input, output, session) {
                width = width,
                alt = "Logos")
         }, deleteFile = FALSE)
-      } 
+      }
       # OutputType 3: Leaflet Output
       else if(outputType=="leafletOutput"){
         cat("~~~ Leaflet Map ~~~", fill=T)
@@ -215,7 +218,7 @@ server <- function(input, output, session) {
           leafletMap$drawMap(year)
       })
         cat("~~~ Setting up Info Boxes ~~~", fill=T)
-        
+
         mapShapeClick <- paste0(mapOutputId, "_shape_click")
         changeLayer <- paste0(mapOutputId, "_groups_baselayerchange")
         value <- reactiveValues(noClickYet = FALSE, layer=1)
@@ -252,14 +255,14 @@ server <- function(input, output, session) {
            layerRegionId <- region()
            if(is.null(layerRegionId)){
              layerRegionId <- "layer_1_region_1"
-           } 
+           }
         #   } else {
         #       if(length(value$layer)!=1){
         #         layer <- 1
         #       } else{
         #         layer <- value$layer
         #       }
-            
+
             layerRegionId = strsplit(layerRegionId, "_")
             layerId = as.numeric(layerRegionId[[1]][2])
             regionId = as.numeric(layerRegionId[[1]][4])
@@ -289,7 +292,7 @@ server <- function(input, output, session) {
            )
         })
         })
-      } 
+      }
       }
         )}
       })
