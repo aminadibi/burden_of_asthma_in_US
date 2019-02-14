@@ -1,0 +1,8 @@
+ctx <- V8::v8()
+ctx$source("https://cdnjs.cloudflare.com/ajax/libs/coffee-script/1.4.0/coffee-script.min.js")
+ctx$source("https://www.gstatic.com/charts/loader.js")
+jscode <- ctx$call("CoffeeScript.compile", "square = (x) -> x * x", list(bare = TRUE))
+ctx$eval(jscode)
+ctx$call("square", 9)
+ctx$source("./R/jsfunctions.js")
+ctx$eval("google.charts.load('current', {'packages':['corechart']});")

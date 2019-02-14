@@ -151,6 +151,8 @@ makeMainPanel = function(){
   c = div(id = self$downloadInputId,
           downloadButton(self$downloadOutputId,
                          self$downloadLabel))
+  #d = div(id="series_chart_div", style="width: 900px; height: 500px;")
+  e = googleChartOutput(outputId=paste0(self$graphOutputId, "test"))
   if(self$dropdown){
     # Dropdown Menu for Graph
     a = selectizeInput(inputId=self$dropdownId,
@@ -158,8 +160,8 @@ makeMainPanel = function(){
                        options = list(style="z-index:100;"),
                        choices = self$dropdownChoices,
                        selected = self$dropdownSelected)
-    return(list(a,b,c))} else {
-      return(list(b,c))
+    return(list(a,b,c,e))} else {
+      return(list(b,c,e))
     }
 
 }
