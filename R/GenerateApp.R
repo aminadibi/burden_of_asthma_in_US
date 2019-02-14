@@ -43,6 +43,7 @@ tabItemsList = list(
                               tabNumber = 2,
                               dropdownChoices = c("Direct Cost"="directCost", "Indirect Cost"="indirectCost"),
                               dropdownSelected = c("directCost"),
+                              pngDownloadName = "costGraph",
                               sidebarChoicesNumber = length(dataSubClasses),
                               sidebarShownLabels = dataSubClassNames,
                               dataSubClasses = rawData$dataSubClasses),
@@ -62,6 +63,7 @@ tabItemsList = list(
                                 dropdownChoices = "qalyLost",
                                 dropdownSelected = NULL,
                                 dropdown = FALSE,
+                                pngDownloadName = "qalyLostGraph",
                                 sidebarChoicesNumber = length(dataSubClasses),
                                 sidebarShownLabels = dataSubClassNames,
                                 dataSubClasses = rawData$dataSubClasses),
@@ -69,7 +71,8 @@ tabItemsList = list(
                                inputId = "tab5",
                                tabNumber = 5,
                                markdownFileName = "about.Rmd",
-                               imageId = "image1"
+                               imageId = "image1",
+                               imFile = "logos2.png"
 ),
   "tab6" = TabItemDashText$new(title = "Terms",
                                inputId = "tab6",
@@ -117,32 +120,6 @@ leafletMapList <- list(
                           rawData = rawData))
 
 
-
-choices_gender <- list("female" = "Female",
-                       "male" = "Male",
-                       "all" = "all genders")
-choices_age <- list("35-54" = "35",
-                    "55-64" = "55",
-                    "65-74" = "65",
-                    "75 and older" = "75",
-                    "all" = "all ages")
-choices_prov <- list(
-  "Alberta" = "AB",
-  "British Columbia" = "BC",
-  "Manitoba" = "MB",
-  "New Brunswick" = "NB",
-  "Newfoundland and Labrador" = "NL",
-  "Nova Scotia" = "NS",
-  "Ontario" = "ON",
-  "Prince Edward Island" = "PE",
-  "Quebec" = "QC",
-  "Saskatchewan" = "SK",
-  "all" = "Canada")
-choices_cost <- list("Total" = "sum",
-                     "Inpatient" = "hosp",
-                     "Outpatient" = "MSP",
-                     "Pharma" = "pharm")
-
 tab3 <- c("plotlyOutput", "download")
 tab2 <- c("selectInput","infoBox","infoBox","infoBox","infoBox", "leafletOutput", "sliderInput")
 tab1 <- c("selectInput", "plotlyOutput", "download")
@@ -157,10 +134,6 @@ tab5input <- c()
 tab6input <- c()
 tab2id <- list("label" = c("costTypeMap","box1","box2", "box3","box4", "map", "sliderYear"),
                "title" = c("Cost Map", "","","","","", "Year"),
-               "treatmentTypeTitles" = c("Inpatient", "Outpatient", "Medication",
-                                         "Total Cost for "),
-               "treatmentType" = c("hosp", "MSP", "pharm", "sum"),
-               "choices" = list(choices_cost),
                "selected" = c("sum"),
                "numberOfBoxes" = 4,
                "boxLabel"="box",
@@ -177,26 +150,17 @@ tab2id <- list("label" = c("costTypeMap","box1","box2", "box3","box4", "map", "s
                                        "animate" = animationOptions(interval = 300,
                                                                     loop = FALSE)),
                "functions"=c("getMapData"))
-tab3id <- list("label" = c("plot_n_COPD", "download_plot_n"),
-               "title" = c("", "Download Plot"),
-               "tabNumber"=3,
-               "png_name"="COPD_Projected_Prevalence_",
-               "functions"=c("n_copd_plot"))
+tab3id <- list("title" = c("", "Download Plot"),
+               "tabNumber"=3)
 tab1id <- list("label" = c("costType", "plot_cost", "download_plot_cost"),
                "title" = c("Cost Type", "", "Download Plot"),
-               "choices" = list(choices_cost),
                "tabNumber"=1,
                "selected" = c("sum"),
-               "png_name"="COPD_Projected_cost_",
                "functions"=c("cost_plot"))
 tab4id <- list("label" = c("box01","box02", "box03","box04","map2", "sliderYear2"),
                "title" = c("","","","", "Case Map", "", "Year"),
-               "choices" = list(choices_cost),
                "numberOfBoxes"=4,
                "tabNumber"=4,
-               "treatmentType" = c("hosp", "MSP", "pharm", "sum"),
-               "treatmentTypeTitles" = c("Inpatient", "Outpatient", "Medication",
-                                         "Total Cases in "),
                "selected" = c("sum"),
                "boxLabel" = "box0",
                "boxPrefix"="",
@@ -209,10 +173,9 @@ tab4id <- list("label" = c("box01","box02", "box03","box04","map2", "sliderYear2
                                        "ticks"=TRUE,
                                        "sep"="",
                                        "animate" = animationOptions(interval = 300,
-                                                                    loop = FALSE)),
-               "functions"=c("getMapData"))
+                                                                    loop = FALSE)))
 tab6id <- list("markdownFile"="disclaimer.rmd")
-tab5id <- list("markdownFile"="about.Rmd","imFile"="logos2.png", "label"=c("","logos"))
+tab5id <- list("markdownFile"="about.Rmd","label"=c("","logos"))
 
 metaData = new("MetaData")
 metaData@app_title = "Burden of Asthma in US"

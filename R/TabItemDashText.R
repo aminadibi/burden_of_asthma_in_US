@@ -13,6 +13,7 @@ TabItemDashText <- R6Class(
     # Fields
     markdownFileName = NULL,
     imageId = NULL,
+    imFile = NULL,
     # Server Output
     outputTypes = NULL,
     outputIds = c(),
@@ -23,13 +24,15 @@ TabItemDashText <- R6Class(
       inputId,
       tabNumber,
       markdownFileName,
-      imageId = NULL
+      imageId = NULL,
+      imFile = NULL
     ){
       super$initialize(title, inputId, tabNumber)
       self$markdownFileName = markdownFileName
       self$imageId = imageId
       if(!is.null(self$imageId)){
         self$outputTypes = c("imageOutput")
+        self$imFile = imFile
       }
 
     },

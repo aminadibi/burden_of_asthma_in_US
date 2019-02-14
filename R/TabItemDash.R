@@ -12,10 +12,11 @@ TabItemDash <- R6Class(
     title = NULL,
     inputId = NULL,
     tabNumber = NULL,
-
     # Constructor
     initialize = function(
-      title, inputId, tabNumber
+      title, 
+      inputId, 
+      tabNumber
     ){
       self$title = title
       self$inputId = inputId

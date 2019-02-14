@@ -21,8 +21,7 @@ library(htmltools)
 library(maps) # interactive map
 library(mapproj)
 library(leaflet)
-
-source("./R/Cost.R")
+library(V8)
 source("./R/Census.R")
 source("./R/MapData.R")
 source("./R/MetaData.R")
@@ -32,6 +31,7 @@ source("./R/DashGraph.R")
 source("./R/LeafletMap.R")
 source("./R/CountryBaseMap.R")
 source("./R/colorSchemes.R")
+source("./R/extendShinyjs2.R")
 
 load(file="./data/metaData.RData")
 load(file="./data/cleanedRawData.RData")
@@ -47,9 +47,9 @@ appLayout <- AppLayout$new(6, "burdenOfAsthma")
 initialize = TRUE
 cat("~~~ Starting UI ~~~", fill=T)
 
-
+includeScript("./ts/startFunctions.js")
 ui <- dashboardPage(skin=appLayout$dashboardColour,
-
+                    
   # header
   dashboardHeader(title=metaData@app_title, titleWidth=320),
   # sidebar
@@ -71,7 +71,8 @@ ui <- dashboardPage(skin=appLayout$dashboardColour,
   # body
   dashboardBody(asList = T,
     shinyjs::useShinyjs(),
-
+    #shinyjs::extendShinyjs(script = "./ts/startFunctions.js", functions = c("startHeatMap", "trying")),
+    extendShinyjs2(script = "./ts/startFunctions.js", functions = c("startHeatMap", "trying")),
     tabItems(asList = T,
 
             lapply(1:metaData@tabs, function(i){
@@ -84,6 +85,9 @@ ui <- dashboardPage(skin=appLayout$dashboardColour,
 
 server <- function(input, output, session) {
 
+  color = shinyjs::js$startHeatMap(5)
+  print(color)
+  sout("Working")
   tabItemsList = metaData@tabItemsList
   cat("~~~ Starting server ~~~", fill=T)
   colorScheme = colorSchemes[[metaData@colorScheme]]
@@ -96,7 +100,6 @@ server <- function(input, output, session) {
   }
 
   observe({
-    #sout("Selected Tab: ", input$selectedTab)
     selectedTabItem <- tabItemsList[[input$selectedTab]]
     leafletGroups <- selectedTabItem$leafletGroups
     if(!is.null(leafletGroups) && !is.null(input[[leafletGroups]])){
@@ -104,6 +107,7 @@ server <- function(input, output, session) {
     }
 
      if(tabItemsList[[input$selectedTab]]$title=="Graph"){
+       
        selectedTabItem <- tabItemsList[[input$selectedTab]]
       for(i in 1:selectedTabItem$sidebarChoicesNumber){
         sidebarShownInput <- input[[selectedTabItem$sidebarShownIds[i]]]
@@ -135,6 +139,9 @@ server <- function(input, output, session) {
         outputId = tabItemDash$graphOutputId
         output[[outputId]]<- renderPlotly({
           sout("~~~ Making Graph ~~~")
+          shinyjs::showLog()
+          shinyjs::js$startHeatMap(5)
+          shinyjs::js$trying(5)
           dataSubClassNames = c("Year", "State", "Sex", "Age")
           dashGraph <- DashGraph$new(dataSubClassNames)
           p <- reactive({
@@ -172,9 +179,10 @@ server <- function(input, output, session) {
       # OutputType 1: Download
       else if(outputType=="downloadOutput"){
         sout("~~~ Download ~~~")
-        output[[settings$label[k]]] <- downloadHandler(
+        outputId = tabItemDash$downloadOutputId
+        output[[outputId]] <- downloadHandler(
           filename = function(){
-            paste(settings$png_name, Sys.Date(), ".png", sep="")},
+            paste(tabItemDash$pngDownloadName, Sys.Date(), ".png", sep="")},
           content = function(file) {
             ggsave(file, device="png", width=11, height=8.5)})
       } 
@@ -184,7 +192,7 @@ server <- function(input, output, session) {
           width  <- session$clientData$output_logos_width
           height <- session$clientData$output_logos_height
           # Return a list containing the filename
-          list(src = paste0("./static_data/",settings$imFile),
+          list(src = paste0("./static_data/",tabItemDash$imFile),
                contentType = 'image/png',
                width = width,
                alt = "Logos")
@@ -256,18 +264,6 @@ server <- function(input, output, session) {
             layerId = as.numeric(layerRegionId[[1]][2])
             regionId = as.numeric(layerRegionId[[1]][4])
 
-         #}
-          # mapDataList <- p()
-          # map <- CreateMap$new(layers=mapSettings$layers,
-          #            groups = mapSettings$groups, legendLabels=mapSettings$legendLabels,
-          #            mapDataList=mapDataList)
-          # map$setupMap()
-          # cat("Creating map", fill=T)
-
-
-          # mapLayer <- map$mapDataList[[layer]]
-
-          # typeList <- map$costType(layer, settings$treatmentType[box], TRUE, mapSettings$dense[layer])
           leafletMap <- p()
           value <- leafletMap$getLayerValueData(valueName=valueName, year = 19, layer = layerId)
           regionName = leafletMap$regionNames[regionId]

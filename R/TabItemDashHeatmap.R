@@ -9,13 +9,13 @@ library(shiny)
 
 
 
-TabItemDashGraph <- R6Class(
-  "TabItemDashGraph",
+TabItemDashHeatmap <- R6Class(
+  "TabItemDashHeatmap",
   inherit = TabItemDash,
   public = list(
-
+    
     # Fields -----
-
+    
     # Generic
     mainBoxColor = "info",
     # Graph
@@ -44,8 +44,8 @@ TabItemDashGraph <- R6Class(
     # Server Output
     outputTypes = c("plotlyOutput", "downloadOutput"),
     outputIds = c(),
-
-
+    
+    
     # Constructor
     initialize = function(
       title,
@@ -60,7 +60,7 @@ TabItemDashGraph <- R6Class(
       downloadLabel = "Download",
       pngDownloadName,
       dataSubClasses
-
+      
     ){
       super$initialize(title, inputId, tabNumber)
       self$mainBoxColor = mainBoxColor
@@ -81,11 +81,11 @@ TabItemDashGraph <- R6Class(
       self$makeId("downloadOutput", "downloadOutputId")
       self$generateSidebarChoices(dataSubClasses)
     },
-
+    
     makeRadioButtons = function(){
       sidebarPanelList = list()
       for(i in 1:self$sidebarChoicesNumber){
-
+        
         showHideButtons = radioButtonsColl(
           inputId = self$sidebarShownIds[i],
           label = self$sidebarShownLabels[i],
@@ -103,7 +103,7 @@ TabItemDashGraph <- R6Class(
       }
       return(sidebarPanelList)
     },
-
+    
     # Override
     tabItem = function(){
       shinydashboard2::tabItem(
@@ -121,10 +121,10 @@ TabItemDashGraph <- R6Class(
                 self$makeMainPanel()
               )
             )))
-            },
-
-#EFFECTS: given a list of DataSubClass objects, create the sidebar menu based off
-        # the options pulled from the csv file
+    },
+    
+    #EFFECTS: given a list of DataSubClass objects, create the sidebar menu based off
+    # the options pulled from the csv file
     generateSidebarChoices = function(dataSubClasses){
       if(!is.list(dataSubClasses)){
         stop("dataSubClasses must be a list containing objects of class DataSubClass")
@@ -142,29 +142,29 @@ TabItemDashGraph <- R6Class(
         self$sidebarHiddenSelected = c(self$sidebarHiddenSelected, c("All"))
       }
     },
-
-makeMainPanel = function(){
-
-  # Graph Output
-  b = plotlyOutput(outputId = self$graphOutputId)
-  # Download Data Button
-  c = div(id = self$downloadInputId,
-          downloadButton(self$downloadOutputId,
-                         self$downloadLabel))
-  if(self$dropdown){
-    # Dropdown Menu for Graph
-    a = selectizeInput(inputId=self$dropdownId,
-                       label="",
-                       options = list(style="z-index:100;"),
-                       choices = self$dropdownChoices,
-                       selected = self$dropdownSelected)
-    return(list(a,b,c))} else {
-      return(list(b,c))
+    
+    makeMainPanel = function(){
+      
+      # Graph Output
+      b = plotlyOutput(outputId = self$graphOutputId)
+      # Download Data Button
+      c = div(id = self$downloadInputId,
+              downloadButton(self$downloadOutputId,
+                             self$downloadLabel))
+      if(self$dropdown){
+        # Dropdown Menu for Graph
+        a = selectizeInput(inputId=self$dropdownId,
+                           label="",
+                           options = list(style="z-index:100;"),
+                           choices = self$dropdownChoices,
+                           selected = self$dropdownSelected)
+        return(list(a,b,c))} else {
+          return(list(b,c))
+        }
+      
     }
-
-}
-
-
+    
+    
   ))
 
 
