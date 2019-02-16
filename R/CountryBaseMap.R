@@ -1,6 +1,5 @@
 source('./R/helper_functions.R')
 source('./R/TabItemDash.R')
-#source('../R/initialize.R')
 library(R6)
 library(raster)
 library(rgdal)

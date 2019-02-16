@@ -3,7 +3,7 @@ source('./R/TabItemDash.R')
 source('./R/MapLayer.R')
 library(R6)
 library(raster)
-library(rgdal)
+#library(rgdal)
 library(rgeos)
 
 

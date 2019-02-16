@@ -6,7 +6,7 @@
 #
 #    http://shiny.rstudio.com/
 #
-library(googleCharts)
+library(googleChart)
 library(shiny)
 library(shinythemes)
 library(shinydashboard2)
@@ -21,7 +21,6 @@ library(htmltools)
 library(maps) # interactive map
 library(mapproj)
 library(leaflet)
-library(V8)
 source("./R/Census.R")
 source("./R/MapData.R")
 source("./R/MetaData.R")
@@ -49,7 +48,7 @@ cat("~~~ Starting UI ~~~", fill=T)
 
 includeScript("./ts/startFunctions.js")
 ui <- dashboardPage(skin=appLayout$dashboardColour,
-                    
+
   # header
   dashboardHeader(title=metaData@app_title, titleWidth=320),
   # sidebar
@@ -70,11 +69,11 @@ ui <- dashboardPage(skin=appLayout$dashboardColour,
   ),
   # body
   dashboardBody(asList = T,
-                tags$head(tags$script(type="text/javascript", src="https://www.gstatic.com/charts/loader.js")),
+                #tags$head(tags$script(type="text/javascript", src="https://www.gstatic.com/charts/loader.js")),
                 tags$head(tags$script(type="text/javascript", src="jsfunctions.js")),
     shinyjs::useShinyjs(),
     #shinyjs::extendShinyjs(script = "./ts/startFunctions.js", functions = c("startHeatMap", "trying")),
-    extendShinyjs2(script = "./ts/startFunctions.js", functions = c("startHeatMap", "trying")),
+    #extendShinyjs2(script = "./ts/startFunctions.js", functions = c("startHeatMap", "trying")),
     #shinyjs::extendShinyjs(text=jscode),
     #shinyjs::extendShinyjs(script="./R/jsfunctions.js"),
 
@@ -90,8 +89,7 @@ ui <- dashboardPage(skin=appLayout$dashboardColour,
 
 server <- function(input, output, session) {
 
-  color = shinyjs::js$startHeatMap(5)
-  print(color)
+  #color = shinyjs::js$startHeatMap(5)
   sout("Working")
   shinyjs::showLog()
   #shinyjs::js$getProfileData()
@@ -115,7 +113,7 @@ server <- function(input, output, session) {
     }
 
      if(tabItemsList[[input$selectedTab]]$title=="Graph"){
-       
+
        selectedTabItem <- tabItemsList[[input$selectedTab]]
       for(i in 1:selectedTabItem$sidebarChoicesNumber){
         sidebarShownInput <- input[[selectedTabItem$sidebarShownIds[i]]]

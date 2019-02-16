@@ -2,7 +2,7 @@ source('./R/helper_functions.R')
 source('./R/TabItemDash.R')
 library(R6)
 library(raster)
-library(rgdal)
+#library(rgdal)
 library(rgeos)
 
 
