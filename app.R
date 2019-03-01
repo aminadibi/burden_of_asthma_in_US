@@ -69,14 +69,7 @@ ui <- dashboardPage(skin=appLayout$dashboardColour,
   ),
   # body
   dashboardBody(asList = T,
-                #tags$head(tags$script(type="text/javascript", src="https://www.gstatic.com/charts/loader.js")),
-                tags$head(tags$script(type="text/javascript", src="jsfunctions.js")),
     shinyjs::useShinyjs(),
-    #shinyjs::extendShinyjs(script = "./ts/startFunctions.js", functions = c("startHeatMap", "trying")),
-    #extendShinyjs2(script = "./ts/startFunctions.js", functions = c("startHeatMap", "trying")),
-    #shinyjs::extendShinyjs(text=jscode),
-    #shinyjs::extendShinyjs(script="./R/jsfunctions.js"),
-
     tabItems(asList = T,
 
             lapply(1:metaData@tabs, function(i){
@@ -89,11 +82,7 @@ ui <- dashboardPage(skin=appLayout$dashboardColour,
 
 server <- function(input, output, session) {
 
-  #color = shinyjs::js$startHeatMap(5)
-  sout("Working")
   shinyjs::showLog()
-  #shinyjs::js$getProfileData()
-  #shinyjs::js$drawSeriesChart()
   tabItemsList = metaData@tabItemsList
   cat("~~~ Starting server ~~~", fill=T)
   colorScheme = colorSchemes[[metaData@colorScheme]]
@@ -143,14 +132,22 @@ server <- function(input, output, session) {
       if(outputType=="plotlyOutput"){
         sout("~~~ Plotly Graph ~~~")
         outputId = tabItemDash$graphOutputId
-        output[[paste0(outputId, "test")]] = renderGoogleChart({
-          googleChart("testing")
+        googleChartId = tabItemDash$googleChartOutputId
+        output[[googleChartId]] = renderGoogleChart({
+          googleChart(googleChartId, data = rawData$subsetData(rawData$cleanedData,
+                                                           list("State", c("Iowa", "Arkansas")),
+                                                           list("Sex", c("Female", "Male")),
+                                                           list("Age", c("15 to 19 years",
+                                                                         "20 to 24 years",
+                                                                         "25 to 29 years",
+                                                                         "80 to 84 years")),
+                                                           list("Year", 19)),
+                      column1="qalyLost", column2 = "indirectCost",
+                      column0 = "State", column3 = "Age",
+                      headerTitles = c("State", "QALY Lost", "Indirect Cost", "Age", "NoSize"))
         })
         output[[outputId]]<- renderPlotly({
           sout("~~~ Making Graph ~~~")
-          shinyjs::showLog()
-          shinyjs::js$startHeatMap(5)
-          shinyjs::js$trying(5)
           dataSubClassNames = c("Year", "State", "Sex", "Age")
           dashGraph <- DashGraph$new(dataSubClassNames)
           p <- reactive({

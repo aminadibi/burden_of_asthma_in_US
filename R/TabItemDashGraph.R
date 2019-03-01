@@ -21,6 +21,7 @@ TabItemDashGraph <- R6Class(
     # Graph
     graphInputId = NULL,
     graphOutputId = NULL,
+    googleChartOutputId = NULL,
     # Dropdown for Graph
     dropdownId = NULL,
     dropdownChoices = NULL,
@@ -73,6 +74,7 @@ TabItemDashGraph <- R6Class(
       self$pngDownloadName = pngDownloadName
       self$makeId("graphInput", "graphInputId")
       self$makeId("graphOutput", "graphOutputId")
+      self$makeId("googleChartOutput", "googleChartOutputId")
       self$makeId("dropdown", "dropdownId")
       self$makeId("shown", "sidebarShownIds", self$sidebarChoicesNumber)
       self$makeId("hidden", "sidebarHiddenIds", self$sidebarChoicesNumber)
@@ -152,7 +154,7 @@ makeMainPanel = function(){
           downloadButton(self$downloadOutputId,
                          self$downloadLabel))
   #d = div(id="series_chart_div", style="width: 900px; height: 500px;")
-  e = googleChartOutput(outputId=paste0(self$graphOutputId, "test"))
+  e = googleChartOutput(outputId=self$googleChartOutputId)
   if(self$dropdown){
     # Dropdown Menu for Graph
     a = selectizeInput(inputId=self$dropdownId,
