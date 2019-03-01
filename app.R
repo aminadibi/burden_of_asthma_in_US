@@ -39,7 +39,6 @@ print(metaData)
 
 # Left Sidebar
 
-s_tabs = c(2,3)
 tab_titles = metaData@tab_titles
 i=1
 appLayout <- AppLayout$new(6, "burdenOfAsthma")
@@ -134,16 +133,20 @@ server <- function(input, output, session) {
         outputId = tabItemDash$graphOutputId
         googleChartId = tabItemDash$googleChartOutputId
         output[[googleChartId]] = renderGoogleChart({
-          googleChart(googleChartId, data = rawData$subsetData(rawData$cleanedData,
-                                                           list("State", c("Iowa", "Arkansas")),
-                                                           list("Sex", c("Female", "Male")),
-                                                           list("Age", c("15 to 19 years",
-                                                                         "20 to 24 years",
-                                                                         "25 to 29 years",
-                                                                         "80 to 84 years")),
-                                                           list("Year", 19)),
-                      column1="qalyLost", column2 = "indirectCost",
-                      column0 = "State", column3 = "Age",
+          googleChart(googleChartId,
+                      data = rawData$subsetData(rawData$cleanedData,
+                                                list("State", c("Iowa", "Arkansas")),
+                                                list("Sex", c("Female", "Male")),
+                                                list("Age",
+                                                     c("15 to 19 years",
+                                                       "20 to 24 years",
+                                                       "25 to 29 years",
+                                                       "80 to 84 years")),
+                                                       list("Year", 19)),
+                      column0 = "State",
+                      column1="qalyLost",
+                      column2 = "indirectCost",
+                      column3 = "Age",
                       headerTitles = c("State", "QALY Lost", "Indirect Cost", "Age", "NoSize"))
         })
         output[[outputId]]<- renderPlotly({
