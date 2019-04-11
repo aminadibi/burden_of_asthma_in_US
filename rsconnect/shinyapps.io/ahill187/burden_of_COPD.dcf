@@ -1,0 +1,13 @@
+name: burden_of_COPD
+title: burden_of_COPD
+username:
+account: ahill187
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 474339
+bundleId: 1940578
+url: https://ahill187.shinyapps.io/burden_of_COPD/
+when: 1552596059.74816
+asMultiple: FALSE
+asStatic: FALSE
+ignoredFiles: extra/datacleaning.R|extra/map_options.R|extra/map_plots.R

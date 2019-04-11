@@ -1,0 +1,52 @@
+Year,State,Sex,Age,Uncontrolled_Direct Costs,Uncontrolled_Indirect Costs,Uncontrolled_QALYs_Lost,Total Uncontrolled cost
+20Year,Alabama,Allsex,Allage,17463.74,42985.28,0.825,60449.02
+20Year,Alaska,Allsex,Allage,18670.69,56058.59,0.913,74729.28
+20Year,Arizona,Allsex,Allage,21426.63,54685.76,1.103,76112.39
+20Year,Arkansas,Allsex,Allage,13322.36,30862.45,0.72,44184.81
+20Year,California,Allsex,Allage,20731.84,57054.37,1.076,77786.21
+20Year,Colombia,Allsex,Allage,20932.47,82452.17,0.97,103384.64
+20Year,Colorado,Allsex,Allage,24540.95,70409.99,1.02,94950.94
+20Year,Connecticut,Allsex,Allage,27230,95422.09,1.191,122652.09
+20Year,Delaware,Allsex,Allage,21640.21,61904.38,0.955,83544.59
+20Year,Florida,Allsex,Allage,20719.68,53780.11,0.922,74499.79
+20Year,Georgia,Allsex,Allage,16014.9,40595.71,0.847,56610.61
+20Year,Hawaii,Allsex,Allage,28021.07,75273.51,1.183,103294.58
+20Year,Idaho,Allsex,Allage,19467.94,45270.52,0.87,64738.46
+20Year,Illinois,Allsex,Allage,18441.75,53362.86,0.864,71804.61
+20Year,Indiana,Allsex,Allage,21745.55,52643.41,0.997,74388.96
+20Year,Iowa,Allsex,Allage,15435.39,39281.33,0.718,54716.72
+20Year,Kensas,Allsex,Allage,17331.02,45084.07,0.844,62415.09
+20Year,Kentucky,Allsex,Allage,21545.86,49067.3,1.022,70613.16
+20Year,Louisiana,Allsex,Allage,14121.48,32430.28,0.756,46551.76
+20Year,Maine,Allsex,Allage,20126.44,52560.24,0.972,72686.68
+20Year,Maryland,Allsex,Allage,19014.14,62281.26,0.966,81295.4
+20Year,Massacheusetts,Allsex,Allage,21346.79,70565.25,1.017,91912.04
+20Year,Michigan,Allsex,Allage,25388.21,68318.44,1.043,93706.65
+20Year,Minnesota,Allsex,Allage,17784.87,54456.66,0.836,72241.53
+20Year,Mississippi,Allsex,Allage,13655.67,31379.84,0.758,45035.51
+20Year,Missouri,Allsex,Allage,17164.09,44166.22,0.872,61330.31
+20Year,Montana,Allsex,Allage,27838.72,62770.73,1.157,90609.45
+20Year,Nebareska,Allsex,Allage,16263.57,39974.85,0.79,56238.42
+20Year,Nevada,Allsex,Allage,23304.39,56313.55,1.034,79617.94
+20Year,New Hampshire,Allsex,Allage,19893.4,60928.83,0.999,80822.23
+20Year,New Jeresy,Allsex,Allage,21578.62,70506.29,1.006,92084.91
+20Year,New Mexico,Allsex,Allage,27032.41,70912.81,1.173,97945.22
+20Year,New York,Allsex,Allage,25298.08,73845.39,1.212,99143.47
+20Year,North Carolina,Allsex,Allage,16171.02,39613.58,0.778,55784.6
+20Year,North Dakota,Allsex,Allage,18785.48,47982.32,0.891,66767.8
+20Year,Ohio,Allsex,Allage,20260.8,51625.33,1.003,71886.13
+20Year,Oklahama,Allsex,Allage,20270.94,48357.62,1.017,68628.56
+20Year,Oregon,Allsex,Allage,24645.12,71406.11,1.041,96051.23
+20Year,Pennsylvania,Allsex,Allage,21621.07,61307.04,1.025,82928.11
+20Year,Rhode Island,Allsex,Allage,21669.54,62058.66,1.089,83728.2
+20Year,South Carolina,Allsex,Allage,17460.76,40341.64,0.837,57802.4
+20Year,South Dakota,Allsex,Allage,16198.28,36632.38,0.773,52830.66
+20Year,Tennessee,Allsex,Allage,18266,40798.05,0.776,59064.05
+20Year,Texas,Allsex,Allage,17648.36,42690.53,0.934,60338.89
+20Year,Utah,Allsex,Allage,18084.15,47388.03,0.904,65472.18
+20Year,Vermont,Allsex,Allage,19173.46,51775.48,0.944,70948.94
+20Year,Virigina,Allsex,Allage,19798.92,58269.45,0.926,78068.37
+20Year,Washington,Allsex,Allage,20497.35,61553.6,0.895,82050.95
+20Year,West Virginia,Allsex,Allage,23491.17,59595.35,0.999,83086.52
+20Year,Wisconsin,Allsex,Allage,20798.33,56844.06,0.888,77642.39
+20Year,Wyoming,Allsex,Allage,19061.97,52143.18,0.837,71205.15
