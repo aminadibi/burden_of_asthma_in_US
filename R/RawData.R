@@ -61,7 +61,7 @@ RawData <- R6Class(
       }
 
     },
-    
+
     # MODIFIES: this
     # EFFECTS: given a cell value to find and cell value to insert,
     #          edit any cells matching in the column provided
@@ -71,9 +71,9 @@ RawData <- R6Class(
       indices = which(dataColumn==valueToFind)
       data[[columnName]][indices] = valueToInsert
       self$cleanedData = data
-      
+
     },
-    
+
     # REQUIRES: censusData is a type or subtype of CensusData
     # EFFECTS: add census data
     addCensusData = function(
@@ -81,7 +81,7 @@ RawData <- R6Class(
     ){
       self$censusData = censusData
     },
-    
+
     # REQUIRES: regionType is a string for the column containing regions, i.e. State, Province, County
     #           valueNames is a list of column names containing the values to be used e.g. indirectCost
     #           layerNames is the layers on the map, e.g. overall and perCapita
@@ -90,8 +90,8 @@ RawData <- R6Class(
     #          and generate the total values per capita
     generateAnnualSums = function(regionType, valueNames, subsetName, layerNames){
       layerFunctions = c("identityFunction", "perCapitaFunction")
-      years = as.numeric(self$dataSubClasses$year$options)
-      regions = self$dataSubClasses$state$options
+      years = as.numeric(self$dataSubClasses$Year$options)
+      regions = self$dataSubClasses$State$options
       annualSums = list()
       annualSumsPerCapita = list()
       layer = 1
@@ -104,11 +104,11 @@ RawData <- R6Class(
         init = TRUE
         oneYear = self$subsetData(self$allData, list("Year", year))
         i = 1
-        
+
         for(region in regions){
         regionYear = self$subsetData(oneYear, list(regionType, region))
         total = 0
-        
+
         for(valueName in valueNames){
           valueSum = sum(as.numeric(regionYear[[valueName]]))
           if(init){
@@ -116,11 +116,11 @@ RawData <- R6Class(
             sumOneYearAllValueTypes[[valueName]] = sumOneYearOneValueType
             sumOneYearTotal = sumOneYearOneValueType
           }
-          
+
           valueSumTransform = self[[layerFunction]](region, valueSum)
           sumOneYearAllValueTypes[[valueName]]$value[i] = valueSumTransform
           total = sum(total, valueSumTransform)
-          
+
         }
         sumOneYearAllValueTypes$total$value[i] = total
         init = FALSE
@@ -133,7 +133,7 @@ RawData <- R6Class(
       }
       self$generateAnnualMaxMin(c("total"), subsetName, layerNames)
     },
-    
+
     # REQUIRES: region is a Province/State/County
     #           valueSum is the value for that region
     # EFFECTS:  returns valueSum unchanged
@@ -142,7 +142,7 @@ RawData <- R6Class(
     ){
       return(valueSum)
     },
-    
+
     # REQUIRES: region is a Province/State/County
     #           valueSum is the value for that region
     # MODIFIES: valueSum
@@ -159,7 +159,7 @@ RawData <- R6Class(
       censusValue = as.numeric(self$censusData$data$population[censusIndex])
       return(valueSum/censusValue)
     },
-    
+
     # REQUIRES: valueNames is a list of column names containing the values to be used e.g. indirectCost
     #           subsetName is the name of the map, e.g. mapOne
     #           layerNames is the layers on the map, e.g. overall and perCapita
@@ -172,7 +172,7 @@ RawData <- R6Class(
       for(layerName in layerNames){
       maxOverYears = list()
       minOverYears = list()
-      years = as.numeric(self$dataSubClasses$year$options)
+      years = as.numeric(self$dataSubClasses$Year$options)
       for(valueName in valueNames){
         maxOverYears[[valueName]] = 0
         minOverYears[[valueName]] = min(
@@ -198,7 +198,7 @@ RawData <- R6Class(
       print(args)
       indices = c()
       first = TRUE
-      
+
       for(arg in args){
         arg = as.list(arg)
         if(length(arg)!=2){
@@ -208,7 +208,7 @@ RawData <- R6Class(
         value = arg[[2]]
         print(value)
         if(length(value)==1 && value=="total") {
-          value = self$dataSubClasses[[tolower(key)]]$totalName
+          value = self$dataSubClasses[[key]]$totalName
           print(value)
         }
         indicesArg = which(data[[key]] %in% value)

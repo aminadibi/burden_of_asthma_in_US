@@ -5,9 +5,9 @@ account: ahill187
 server: shinyapps.io
 hostUrl: https://api.shinyapps.io/v1
 appId: 474339
-bundleId: 1715810
+bundleId: 1940578
 url: https://ahill187.shinyapps.io/burden_of_COPD/
-when: 1542934023.1206
+when: 1552596059.74816
 asMultiple: FALSE
 asStatic: FALSE
-ignoredFiles: app3.R|extra/datacleaning.R|extra/map_options.R|extra/map_plots.R
+ignoredFiles: extra/datacleaning.R|extra/map_options.R|extra/map_plots.R

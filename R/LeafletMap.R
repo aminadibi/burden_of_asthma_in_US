@@ -10,18 +10,18 @@ library(rgeos)
 LeafletMap <- R6Class(
   "LeafletMap",
   public = list(
-    
+
     # Fields
     mapName = NULL,
     # Basemap
     basemapFile = NULL, # name for basemap file
     countryBaseMap = NULL,
-    
+
     # Map Layers
     numLayers = NULL, # number of map layers
     layerChoices = NULL, # name of data layers
     mapLayerList = NULL,
-    
+
     # Map Plot
     palette = NULL, # color palette used
     groups = NULL,
@@ -36,7 +36,7 @@ LeafletMap <- R6Class(
     regionNames = NULL, # names of the regions e.g. Alberta
     maxOverYears = NULL,
     minOverYears = NULL,
-    
+
     # Constructor
     initialize = function(
       mapName,
@@ -72,13 +72,13 @@ LeafletMap <- R6Class(
       self$minOverYears = rawData$minOverYears
       self$createMapLayers()
       self$makeLayerIds()
-      
+
       #self$mapLayerList = self$typeCheck(mapLayerList, "MapLayer", isList = TRUE)
     },
-    
+
     # EFFECTS: checks that fields are correct type (R is not typed)
     typeCheck = function(
-      object, 
+      object,
       desiredClass,
       isList = FALSE
     ){
@@ -90,20 +90,20 @@ LeafletMap <- R6Class(
       if(classCheck!=desiredClass){
         sout("Must be class", desiredClass)
         stop("Object is not desired class")
-        
+
       } else{
         return(object)
       }
     },
-    
+
     createMapLayers = function(){
       mapLayerList <- list()
       for(i in 1:self$numLayers){
         mapLayer <- MapLayer$new(
           self$digits[i],
-          self$prefix[i], 
+          self$prefix[i],
           self$groups[i],
-          self$plotLabels[i], 
+          self$plotLabels[i],
           self$palette[i],
           self$layerChoices[i],
           self$countryBaseMap)
@@ -111,7 +111,7 @@ LeafletMap <- R6Class(
       }
       self$mapLayerList <- mapLayerList
     },
-    
+
     # REQUIRES: year is an integer in the valid range
     # EFFECTS: renders the map for that year
     drawMap = function(
@@ -146,19 +146,19 @@ LeafletMap <- R6Class(
                                bringToFront = TRUE, sendToBack = TRUE, dashArray=NULL)) %>%
         addLegend("bottomleft", pal = pal, values=c(minYear, maxYear),
                 title = self$groups[i], group=self$groups[i],
-                opacity = 1, na.label="No Data", labFormat = myLabFormat(prefix="$ ",
-                                                                         digits=-5),
-                layerId=self$regionNames, initLayer = initLayer)
+                opacity = 1, na.label="No Data", labFormat = myLabFormat(prefix=self$prefix[i],
+                                                                         digits=self$digits[i]),
+                layerId=self$legendLabels[i], initLayer = initLayer)
       i = i+1
       }
       m <- m %>% addLayersControl(baseGroups = c(self$groups),
-                                  options = layersControlOptions(collapsed=FALSE)) %>% 
+                                  options = layersControlOptions(collapsed=FALSE)) %>%
                  htmlwidgets::onRender(
                     "function(el, x) {
                     L.control.zoom({ position: 'topright' }).addTo(this)}") # move zoom control to top right
       return(m)
       },
-    
+
     # REQUIRES: layerName is string, e.g. overall or perCapita
     #           valueName is name of column queried, e.g. directCost
     #           year is an integer within valid years
@@ -168,11 +168,18 @@ LeafletMap <- R6Class(
       layerName, valueName, year
     ){
       layerValueData = self$rawData$annualSums[[self$mapName]][[layerName]][[year]][[valueName]]$value
+      million = 1000000
+      mill = max(layerValueData)/million
+      if(mill > 1){
+        layerValueData = costToMill(layerValueData)
+      } else {
+        layerValueData = round(layerValueData, 1)
+      }
       return(layerValueData)
     },
-    
+
     makeLayerIds = function(
-      
+
     ){
       layerIds = list()
       for(layer in 1:self$numLayers){
@@ -184,14 +191,14 @@ LeafletMap <- R6Class(
         layerIds[[layer]] = layerId
       }
       self$layerIds = layerIds
-      
-    }
-    
 
-    
-    
-    
-    
+    }
+
+
+
+
+
+
   )
   )
 

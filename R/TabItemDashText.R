@@ -30,7 +30,7 @@ TabItemDashText <- R6Class(
       super$initialize(title, inputId, tabNumber)
       self$markdownFileName = markdownFileName
       self$imageId = imageId
-      if(!is.null(self$imageId)){
+      if(!is.null(self$imageId)&&!is.na(self$imageId)){
         self$outputTypes = c("imageOutput")
         self$imFile = imFile
       }

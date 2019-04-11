@@ -25,10 +25,9 @@ TabItemDashMap <- R6Class(
     outputIds = c(),
     leafletGroups = NULL,
     # Map Settings
-    mapSettings = NULL,
     numLayers = NULL,
     layerChoices = NULL,
-    
+
     # Constructor
     initialize = function(
       title,
@@ -37,7 +36,6 @@ TabItemDashMap <- R6Class(
       valueBoxNumber,
       valueBoxWidths,
       tabNumber,
-      mapSettings,
       numLayers,
       layerChoices
     ){
@@ -50,7 +48,6 @@ TabItemDashMap <- R6Class(
       self$makeId("mapOutput", "mapOutputId")
       self$leafletGroups = paste0(self$mapOutputId, "_groups")
       self$numLayers = numLayers
-      self$mapSettings = mapSettings
       self$layerChoices = layerChoices
       self$valueBoxChoices = c(layerChoices,c("Total for "="total"))
     },

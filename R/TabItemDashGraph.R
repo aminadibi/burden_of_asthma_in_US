@@ -22,6 +22,8 @@ TabItemDashGraph <- R6Class(
     graphInputId = NULL,
     graphOutputId = NULL,
     googleChartOutputId = NULL,
+    # Input for Graph
+    dataInput = c("userInput", "csvInput", "functionInput"),
     # Dropdown for Graph
     dropdownId = NULL,
     dropdownChoices = NULL,
@@ -43,8 +45,11 @@ TabItemDashGraph <- R6Class(
     downloadOutputId = NULL,
     pngDownloadName = NULL,
     # Server Output
-    outputTypes = c("plotlyOutput", "downloadOutput"),
+    outputTypes = c("googleChartOutput", "downloadOutput"),
     outputIds = c(),
+    chartType = "googleChart",
+    # App Bricks
+    brickTypes = c("sidebarInput", "googleChartOutput", "downloadOutput"),
 
 
     # Constructor
@@ -60,7 +65,9 @@ TabItemDashGraph <- R6Class(
       sidebarShownLabels,
       downloadLabel = "Download",
       pngDownloadName,
-      dataSubClasses
+      dataSubClasses,
+      columnOptions,
+      columnTypes
 
     ){
       super$initialize(title, inputId, tabNumber)
@@ -81,7 +88,7 @@ TabItemDashGraph <- R6Class(
       self$makeId("hiddenBox", "sidebarHiddenBoxIds", self$sidebarChoicesNumber)
       self$makeId("downloadInput", "downloadInputId")
       self$makeId("downloadOutput", "downloadOutputId")
-      self$generateSidebarChoices(dataSubClasses)
+      self$generateSidebarChoices(columnNames = sidebarShownLabels, columnTypes, columnOptions, dataSubClasses)
     },
 
     makeRadioButtons = function(){
@@ -106,6 +113,29 @@ TabItemDashGraph <- R6Class(
       return(sidebarPanelList)
     },
 
+    makeSelectInput = function(){
+      sidebarPanelList = list()
+      for(i in 1:self$sidebarChoicesNumber){
+        inputElement = selectInput(inputId = self$sidebarShownIds[i],
+                                   label = self$sidebarShownLabels[i],
+                                   choices = self$sidebarHiddenChoices[[i]],
+                                   selected = self$sidebarHiddenChoices[[i]][1])
+        sizeOfList = length(sidebarPanelList)
+        sidebarPanelList[[sizeOfList+1]] = inputElement
+      }
+
+      return(sidebarPanelList)
+    },
+
+    makeSidebarPanel = function(chartType){
+      if(chartType=="googleChart") {
+        sidebarPanelList = self$makeSelectInput()
+      } else {
+        sidebarPanelList = self$makeRadioButtons()
+      }
+      return(sidebarPanelList)
+    },
+
     # Override
     tabItem = function(){
       shinydashboard2::tabItem(
@@ -117,7 +147,7 @@ TabItemDashGraph <- R6Class(
             sidebarLayout(
               # Sidebar Inputs for Graph
               sidebarPanel(
-                self$makeRadioButtons()
+                self$makeSidebarPanel(self$chartType)
               ),
               mainPanel(
                 self$makeMainPanel()
@@ -127,7 +157,8 @@ TabItemDashGraph <- R6Class(
 
 #EFFECTS: given a list of DataSubClass objects, create the sidebar menu based off
         # the options pulled from the csv file
-    generateSidebarChoices = function(dataSubClasses){
+    #' @param dataSubClasses list of type DataSubClass
+    generateSidebarChoicesData = function(dataSubClasses){
       if(!is.list(dataSubClasses)){
         stop("dataSubClasses must be a list containing objects of class DataSubClass")
       }
@@ -145,6 +176,32 @@ TabItemDashGraph <- R6Class(
       }
     },
 
+  generateSidebarChoices = function(columnNames, columnTypes, columnOptionsList, dataSubClasses){
+    if(!is.list(dataSubClasses)){
+      stop("dataSubClasses must be a list containing objects of class DataSubClass")
+    }
+    checkClass = class(dataSubClasses[[1]])
+    if(!"DataSubClass" %in% checkClass){
+      stop("Objects in list must be of class DataSubClass")
+    }
+    self$sidebarHiddenChoices = list()
+    self$sidebarShownChoices = list()
+    dataSubClassNames = names(dataSubClasses)
+    i = 1
+    for(columnOptions in columnOptionsList){
+      if(columnOptions == "generate"){
+        index = which(dataSubClassNames==columnTypes[i])
+        self$sidebarHiddenChoices = c(self$sidebarHiddenChoices, list(dataSubClasses[[index]]$options))
+        self$sidebarShownChoices[[i]] = c("All", "Select")
+        self$sidebarShownSelected = c(self$sidebarShownSelected, c("All"))
+        self$sidebarHiddenSelected = c(self$sidebarHiddenSelected, c("All"))
+      } else {
+        self$sidebarHiddenChoices = c(self$sidebarHiddenChoices, list(columnOptions))
+      }
+      i = i + 1
+    }
+  },
+
 makeMainPanel = function(){
 
   # Graph Output
@@ -154,7 +211,9 @@ makeMainPanel = function(){
           downloadButton(self$downloadOutputId,
                          self$downloadLabel))
   #d = div(id="series_chart_div", style="width: 900px; height: 500px;")
+  # Google Chart Output
   e = googleChartOutput(outputId=self$googleChartOutputId)
+
   if(self$dropdown){
     # Dropdown Menu for Graph
     a = selectizeInput(inputId=self$dropdownId,
@@ -162,8 +221,8 @@ makeMainPanel = function(){
                        options = list(style="z-index:100;"),
                        choices = self$dropdownChoices,
                        selected = self$dropdownSelected)
-    return(list(a,b,c,e))} else {
-      return(list(b,c,e))
+    return(list(a,c,e))} else {
+      return(list(c,e))
     }
 
 }

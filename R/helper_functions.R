@@ -15,7 +15,7 @@ costToMill <- function(cost_vector, char = TRUE){
       figure <- "No Data"
     } else{
       figure <- round(figure, 2)
-      figure <- formatC(figure, format = 'f', digits = 0)
+      figure <- formatC(figure, format = 'f', digits = 1)
       if(char){
         figure <- paste0(as.character(figure), "M")
       }
@@ -74,17 +74,17 @@ myLabFormat <- function(
   prefix = "", suffix = "", between = " &ndash; ", digits = 3, big.mark = ",",
   transform = identity
 ) {
-  
+
   formatNum <- function(x) {
     x <- round(transform(x), digits)
-   
+
     if(max(x)>1000000){
       x <- costToMill(x, char=TRUE)
     }
 
     return(x)
   }
-  
+
   function(type, ...) {
     switch(
       type,
@@ -112,7 +112,7 @@ myLabFormat <- function(
   }}
 
 getCoordinates <- function(start, number, rows, columns, dist=2){
-  
+
   coordinates <- matrix(data=0,number, 2)
   lat <- start[1]
   long <- start[2]
@@ -128,9 +128,9 @@ getCoordinates <- function(start, number, rows, columns, dist=2){
       long <- long+dist
       rowCount <- rowCount+1
     }
-    
-    
-    
+
+
+
   }
   return(coordinates)
 }
@@ -162,7 +162,7 @@ mapIcons <- function(total, inpatient, outpatient, pharm, province){
       icon = 'user',
       iconColor = iconColorList[i],
       library = 'fa'
-      
+
     )
     fillType = paste0("fill",i)
     iconList[[fillType]]=icons
@@ -180,7 +180,7 @@ sout <- function(...){
     string <- paste0(string, " ", arg)
   }
   cat(string, fill=TRUE)
-  
+
 }
 
 # REQUIRES: wordsToCheck is either a string, or a list of strings
@@ -189,7 +189,7 @@ sout <- function(...){
 spellCheck <- function(wordsToCheck){
   wordsToCheck = c(wordsToCheck)
   correctedWords = c()
-  
+
   for(word in wordsToCheck){
     parsedWords = strsplit(word, " ")[[1]]
     firstWord = TRUE
@@ -207,7 +207,7 @@ spellCheck <- function(wordsToCheck){
     }
     correctedWords = c(correctedWords, correctedWord)
   }
-    
+
 
   return(correctedWords)
 }
