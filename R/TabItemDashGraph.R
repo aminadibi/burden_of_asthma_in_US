@@ -222,8 +222,8 @@ makeMainPanel = function(){
                        options = list(style="z-index:100;"),
                        choices = self$dropdownChoices,
                        selected = self$dropdownSelected)
-    return(list(a,c,e))} else {
-      return(list(c,e))
+    return(list(a,e))} else {
+      return(list(e))
     }
 
 }
