@@ -49,8 +49,7 @@ ui <- dashboardPage(
     skin = appLayout$dashboardColour,
 
     # header
-    dashboardHeader(title = appData$title, titleWidth =
-                        320),
+    dashboardHeader(title = appData$title, titleWidth = 320),
     # sidebar
     dashboardSidebar(
         sidebarMenu(
@@ -90,18 +89,23 @@ ui <- dashboardPage(
         )
     ),
     # body
-    dashboardBody(tabItems(
+    dashboardBody(list(tabItems(
                       asList = T,
 
                       lapply(1:numberOfTabs, function(i) {
                           tabItemsList[[i]]$tabItem()
                       })
                   ),
+                  tags$style(type="text/css",
+                             ".shiny-output-error {visibility: hidden;}",
+                             ".shiny-output-error:before {visibility: hidden;}")),
                   asList = T)
+
 )
 
 server <- function(input, output, session) {
     cat("~~~ Starting server ~~~", fill = T)
+    options(warn = -1)
     colorScheme = colorSchemes[[appData$appLayout$colorScheme]]
     filename = "./static_data/USMap.RData"
     init = TRUE
