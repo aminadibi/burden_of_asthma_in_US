@@ -192,7 +192,12 @@ TabItemDashGraph <- R6Class(
     for(columnOptions in columnOptionsList){
       if(columnOptions == "generate"){
         index = which(dataSubClassNames==columnTypes[i])
-        self$sidebarHiddenChoices = c(self$sidebarHiddenChoices, list(dataSubClasses[[index]]$options))
+        if(dataSubClasses[[index]]$hasPrettyOptions){
+            self$sidebarHiddenChoices = c(self$sidebarHiddenChoices, list(dataSubClasses[[index]]$prettyOptions))
+        } else {
+            self$sidebarHiddenChoices = c(self$sidebarHiddenChoices, list(dataSubClasses[[index]]$options))
+        }
+
         self$sidebarShownChoices[[i]] = c("All", "Select")
         self$sidebarShownSelected = c(self$sidebarShownSelected, c("All"))
         self$sidebarHiddenSelected = c(self$sidebarHiddenSelected, c("All"))

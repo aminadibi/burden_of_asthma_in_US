@@ -13,16 +13,19 @@ DataSubClass <- R6Class(
     options = NULL,
     data = NULL,
     totalName = NULL,
+    hasPrettyOptions = FALSE,
 
     # Constructor
     initialize = function(
-      name, 
-      totalName,
-      options = NULL
+      name,
+      totalName = NULL,
+      options = NULL,
+      hasPrettyOptions = FALSE
     ){
       self$name = name
       self$options = options
       self$totalName = totalName
+      self$hasPrettyOptions = hasPrettyOptions
     },
 
     addOptions = function(options){
@@ -40,11 +43,11 @@ DataSubClass <- R6Class(
           cleanedOptions[i] = option
           i = i + 1
         }
-        
+
       }
       self$options = cleanedOptions
     },
-    
+
     # EFFECTS: given the options (levels), correct the spelling
     #          returns options with fixed spelling
     fixSpelling = function(options) {

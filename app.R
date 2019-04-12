@@ -207,7 +207,7 @@ server <- function(input, output, session) {
                             year = c(19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35,
                                      36, 37, 38)
                         } else {
-                            year = as.numeric(year)
+                            year = as.numeric(year) - 2000
                         }
                         print(googleChartId)
                         googleChart(
@@ -231,6 +231,8 @@ server <- function(input, output, session) {
                                         "45 to 49 years",
                                         "50 to 54 years",
                                         "55 to 59 years",
+                                        "60 to 64 years",
+                                        "65 to 69 years",
                                         "80 to 84 years"
                                     )
                                 ),
