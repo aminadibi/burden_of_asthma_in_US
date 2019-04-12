@@ -188,6 +188,7 @@ TabItemDashGraph <- R6Class(
     self$sidebarShownChoices = list()
     dataSubClassNames = names(dataSubClasses)
     i = 1
+    print(columnOptionsList)
     for(columnOptions in columnOptionsList){
       if(columnOptions == "generate"){
         index = which(dataSubClassNames==columnTypes[i])

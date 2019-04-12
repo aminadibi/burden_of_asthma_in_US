@@ -5,7 +5,6 @@ source("R/DataSubClassState.R")
 source("R/TabItemDashMap.R")
 source("R/TabItemDashGraph.R")
 source("R/TabItemDashText.R")
-source("R/settings.R")
 source("R/LeafletMap.R")
 source("R/CensusDataUS.R")
 source("R/CountryBaseMap.R")
@@ -57,7 +56,7 @@ for(i in 1:appData$appLayout$subTabs$number){
       sidebarChoicesNumber = appData$tabs$sidebarChoicesNumber[[i]],
       sidebarShownLabels = appData$tabs$sidebarShownLabels[[i]],
       dataSubClasses = rawData$dataSubClasses,
-      columnOptions = appData$tabs$columnOptions[[i]],
+      columnOptions = sapply(appData$tabs$columnOptions, "[[", i),
       columnTypes = appData$tabs$columnTypes[[i]]
     )
   } else if(tabType == "text") {

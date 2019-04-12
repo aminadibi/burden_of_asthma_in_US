@@ -6,6 +6,9 @@ getOptions = function(input, sidebarIds, columnOptions, type, index, columnTypes
         print("sidebarIds not null")
         xAxis = input[[sidebarIds[1]]]
         yAxis = input[[sidebarIds[2]]]
+        print(xAxis)
+        print(yAxis)
+        print(type)
         if(type == "color") {
             updateOptions = getOptionsColor(xAxis, yAxis, columnOptions)
         } else if(type == "y-axis") {
@@ -50,6 +53,8 @@ getOptionsSize = function(xAxis, yAxis, columnOptions) {
     sizeOptions = columnOptions$size
     x = which(sizeOptions == xAxis)
     y = which(sizeOptions == yAxis)
+    print(x)
+    print(y)
     if (length(x) != 0) {
         if (length(y) != 0) {
             updateOptions = sizeOptions[-c(x, y)]
