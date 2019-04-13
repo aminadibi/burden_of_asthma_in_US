@@ -5,9 +5,9 @@ account: ahill187
 server: shinyapps.io
 hostUrl: https://api.shinyapps.io/v1
 appId: 790868
-bundleId: 2001785
+bundleId: 2004500
 url: https://ahill187.shinyapps.io/BurdenOfAsthma/
-when: 1554940865.35215
+when: 1555019659.05309
 asMultiple: FALSE
 asStatic: FALSE
 ignoredFiles: extra/datacleaning.R|extra/map_options.R|extra/map_plots.R|ts/Data.js|ts/HeatMap.js|ts/HeatMap.ts|ts/startFunctions.js

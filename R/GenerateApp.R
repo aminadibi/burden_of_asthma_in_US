@@ -13,7 +13,7 @@ appData = fromJSON("static_data/app.json")
 dataSubClassNames = appData$data$classNames
 totalNames = c("20Year", "US", "Allsex", "Allage")
 dataSubClasses = list(
-  "Year"=DataSubClassYear$new(dataSubClassNames[1], totalNames[1]),
+  "Year"=DataSubClassYear$new(name = dataSubClassNames[1], totalName = totalNames[1], hasPrettyOptions = TRUE),
   "State"=DataSubClassState$new(dataSubClassNames[2], totalNames[2]),
   "Sex"=DataSubClass$new(dataSubClassNames[3], totalNames[3]),
   "Age"=DataSubClass$new(dataSubClassNames[4], totalNames[4])

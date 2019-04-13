@@ -192,7 +192,12 @@ TabItemDashGraph <- R6Class(
     for(columnOptions in columnOptionsList){
       if(columnOptions == "generate"){
         index = which(dataSubClassNames==columnTypes[i])
-        self$sidebarHiddenChoices = c(self$sidebarHiddenChoices, list(dataSubClasses[[index]]$options))
+        if(dataSubClasses[[index]]$hasPrettyOptions){
+            self$sidebarHiddenChoices = c(self$sidebarHiddenChoices, list(dataSubClasses[[index]]$prettyOptions))
+        } else {
+            self$sidebarHiddenChoices = c(self$sidebarHiddenChoices, list(dataSubClasses[[index]]$options))
+        }
+
         self$sidebarShownChoices[[i]] = c("All", "Select")
         self$sidebarShownSelected = c(self$sidebarShownSelected, c("All"))
         self$sidebarHiddenSelected = c(self$sidebarHiddenSelected, c("All"))
@@ -222,8 +227,8 @@ makeMainPanel = function(){
                        options = list(style="z-index:100;"),
                        choices = self$dropdownChoices,
                        selected = self$dropdownSelected)
-    return(list(a,c,e))} else {
-      return(list(c,e))
+    return(list(a,e))} else {
+      return(list(e))
     }
 
 }

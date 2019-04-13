@@ -118,7 +118,7 @@ LeafletMap <- R6Class(
       year
     ){
       m <- leaflet(options=leafletOptions(zoomControl=FALSE),
-                   width="50%") %>% setView(lng = -100, lat = 60, zoom = 3)%>%
+                   width="50%") %>% setView(lng = -100, lat = 40, zoom = 4)%>%
         addTiles(group="basemap")
       i = 1
       for(layerName in self$layerChoices){
