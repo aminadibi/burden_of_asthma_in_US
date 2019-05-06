@@ -21,7 +21,7 @@ dataSubClasses = list(
 
 fileName = paste0("static_data/WEBAPP_US.csv")
 reNameIndices = c(5,6,7)
-reName = c("indirectCost", "directCost", "qalyLost")
+reName = c("indirectCost", "directCost", "qalysLost")
 
 rawData = RawData$new(fileName, dataSubClasses, reNameIndices, reName, totalNames)
 censusData = CensusDataUS$new("US", 2017)
@@ -79,7 +79,7 @@ if(init){
   load(filename)
 }
 rawData$generateAnnualSums("State", c("directCost", "indirectCost"), "mapOne", c("overall", "perCapita"))
-rawData$generateAnnualSums("State", c("qalyLost"), "mapThree", c("overall"))
+rawData$generateAnnualSums("State", c("qalysLost"), "mapThree", c("overall"))
 leafletMapList = list()
 for(i in c(1,3)){
   leafletMap = appData$tabs$leafletMap
