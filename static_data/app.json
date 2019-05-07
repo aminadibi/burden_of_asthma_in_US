@@ -3,12 +3,12 @@
     "appLayout": {
       "mainTabs": {
         "number": 4,
-        "titles": ["Costs", "QALY", "About", "Terms"]
+        "titles": ["Costs", "QALYs", "About", "Terms"]
       },
       "subTabs": {
         "number":6,
         "titles":[{"Costs":["Map","Graph"]},
-          {"QALY":["Map","Graph"]},
+          {"QALYs":["Map","Graph"]},
           "About",
           "Terms"]
       },
@@ -17,7 +17,7 @@
     },
     "data": {
       "classNames": ["Year", "State", "Age", "Sex"],
-      "valueNames": ["qalyLost", "indirectCost", "directCost"]
+      "valueNames": ["qalysLost", "indirectCost", "directCost"]
 
     },
     "tabs":[
@@ -106,8 +106,8 @@
         "valueBoxWidths": [12],
         "tabNumber": 3,
         "layerChoices": [{
-          "label":"QALY Lost",
-          "valueName": "qalyLost"
+          "label":"QALYs Lost",
+          "valueName": "qalysLost"
         }],
         "leafletMap": {
           "mapName": "mapThree",
@@ -119,11 +119,11 @@
           "numLayers":  1,
           "layerChoices" : [
             {
-              "label":"QALY Lost",
+              "label":"QALYs Lost",
               "value":"overall"}
             ],
-          "groups" : ["QALY Lost"],
-          "plotLabels" : ["QALY Lost: "],
+          "groups" : ["QALYs Lost"],
+          "plotLabels" : ["QALYs Lost: "],
           "digits" : [0],
           "dense" : [true],
           "legendLabels" : ["legend3"],
@@ -137,22 +137,22 @@
         "mainBoxColor" : "info",
         "tabNumber" : 4,
         "dropdownChoices": [{
-          "label":"QALY Lost",
-          "valueName": "qalyLost"
+          "label":"QALYs Lost",
+          "valueName": "qalysLost"
         }],
-        "dropdownSelected": ["qalyLost"],
-        "pngDownloadName" : "qalyLostGraph",
+        "dropdownSelected": ["qalysLost"],
+        "pngDownloadName" : "qalysLostGraph",
         "sidebarChoicesNumber" : 7,
         "sidebarShownLabels" : ["X-Axis", "Y-Axis", "State 1", "State 2", "Year","Color",
                              "Size"],
         "dropdown": false,
-        "columnOptions" : {"xAxis": ["Age", "qalyLost"],
-                           "yAxis": ["Age", "qalyLost"],
+        "columnOptions" : {"xAxis": ["Age", "qalysLost"],
+                           "yAxis": ["Age", "qalysLost"],
                            "state1": "generate",
                            "state2": "generate",
                            "year": "generate",
                            "color":["Age", "Sex", "None"],
-                           "size" : ["qalyLost", "None"]},
+                           "size" : ["qalysLost", "None"]},
         "columnTypes" : ["x-axis", "y-axis", "State", "State", "Year", "color",
                       "size"],
         "column0":"State"
