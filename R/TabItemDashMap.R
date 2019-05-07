@@ -73,7 +73,7 @@ TabItemDashMap <- R6Class(
                     min=2019,
                     max=2038,
                     value=2019,
-                    step=3,
+                    step=4,
                     round=FALSE,
                     ticks=TRUE,
                     sep="",
