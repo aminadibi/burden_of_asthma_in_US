@@ -1,0 +1,12 @@
+name: burden_of_asthma_in_US
+title: burden_of_asthma_in_US
+username:
+account: shefa
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 855961
+bundleId: 2087357
+url: https://shefa.shinyapps.io/burden_of_asthma_in_US/
+when: 1557951671.57237
+asMultiple: FALSE
+asStatic: FALSE
