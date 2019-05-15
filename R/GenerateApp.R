@@ -12,6 +12,7 @@ source("R/CountryBaseMap.R")
 appData = fromJSON("static_data/app.json")
 dataSubClassNames = appData$data$classNames
 totalNames = c("20Year", "US", "Allsex", "Allage")
+keywordsToRemove = c(totalNames, "total", "Total")
 dataSubClasses = list(
   "Year"=DataSubClassYear$new(name = dataSubClassNames[1], totalName = totalNames[1], hasPrettyOptions = TRUE),
   "State"=DataSubClassState$new(dataSubClassNames[2], totalNames[2]),
@@ -21,9 +22,9 @@ dataSubClasses = list(
 
 fileName = paste0("static_data/WEBAPP_US.csv")
 reNameIndices = c(5,6,7)
-reName = c("indirectCost", "directCost", "qalysLost")
+reName = c("directCost", "indirectCost", "qalysLost")
 
-rawData = RawData$new(fileName, dataSubClasses, reNameIndices, reName, totalNames)
+rawData = RawData$new(fileName, dataSubClasses, reNameIndices, reName, keywordsToRemove, totalNames)
 censusData = CensusDataUS$new("US", 2017)
 rawData$addCensusData(censusData)
 rawData$fixCellValues("Total", "Allage", "Age")

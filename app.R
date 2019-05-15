@@ -284,8 +284,7 @@ server <- function(input, output, session) {
                     cat("~~~ Setting up Info Boxes ~~~", fill = T)
 
                     mapShapeClick <- paste0(mapOutputId, "_shape_click")
-                    changeLayer <-
-                        paste0(mapOutputId, "_groups_baselayerchange")
+                    mapBaseLayerChange <- paste0(mapOutputId, "_click")
                     value <- reactiveValues(noClickYet = FALSE, layer = 1)
                     valueBoxOutputIds <- tabItemDash$valueBoxOutputIds
                     lapply(1:tabItemDash$valueBoxNumber, function(box) {
@@ -293,8 +292,9 @@ server <- function(input, output, session) {
                         observeEvent(input[[mapShapeClick]], {
                             print(input[[mapShapeClick]])
                             value$default <- input[[mapShapeClick]]$id
+                            print(value$default)
                         })
-                        sout("Still working")
+
                         output[[boxId]] <- renderValueBox({
                             valueName = tabItemDash$valueBoxChoices[box] # column of data to view in box
                             region <- eventReactive(input[[mapShapeClick]],
@@ -302,14 +302,45 @@ server <- function(input, output, session) {
                                                         # update the location selectInput on map clicks
                                                         input[[mapShapeClick]]$id
                                                     })
-                            layerRegionId <- region()
+                            layerRegionId <- eventReactive(input[[mapBaseLayerChange]],
+                                                           ignoreNULL=FALSE,{
+                                                               print(input[[mapBaseLayerChange]])
+                                                               clickEvent = input[[mapBaseLayerChange]]
+                                                               if(is.null(clickEvent)) {
+                                                                   return(NULL)
+                                                               } else {
+                                                               if(is.null(clickEvent$lng)) {
+                                                                   baseLayerChange = T
+                                                               } else {
+                                                                   baseLayerChange = F
+                                                               }
+                                                               if(baseLayerChange) {
+                                                                   shapeValue = strsplit(input[[mapShapeClick]]$id, "_")[[1]]
+                                                                   print("Changing")
+                                                                   print(shapeValue)
+                                                                   layer = shapeValue[2]
+                                                                   region = paste0(shapeValue[3], "_", shapeValue[4])
+                                                                   if(layer=="1"){
+                                                                       return(paste0("layer_2_", region))
+                                                                   } else {
+                                                                       return(paste0("layer_1_", region))
+                                                                   }
+                                                               } else {
+                                                                   return(input[[mapShapeClick]]$id)
+                                                               }
+                                                               }
+                                                           })
+                            #layerRegionId <- region()
+                            layerRegionId <- layerRegionId()
                             if (is.null(layerRegionId)) {
                                 layerRegionId <- "layer_1_region_1"
                             }
+
+
                             layerRegionId = strsplit(layerRegionId, "_")
                             layerId = as.numeric(layerRegionId[[1]][2])
                             regionId = as.numeric(layerRegionId[[1]][4])
-                            value <-
+                            value2 <-
                                 leafletMap()$getLayerValueData(valueName = valueName,
                                                              year = year(),
                                                              layer = layerId)
@@ -321,14 +352,14 @@ server <- function(input, output, session) {
                             } else{
                                 subtitle = subtitles[box]
                             }
-                            if (value[regionId] == 0 ||
-                                value[regionId] == "No data") {
-                                value = "No data"
+                            if (value2[regionId] == 0 ||
+                                value2[regionId] == "No data") {
+                                value2 = "No data"
                             } else {
-                                value = paste(leafletMap()$prefix, value)
+                                value2 = paste(leafletMap()$prefix, value2)
                             }
                             valueBox(
-                                value = value[regionId],
+                                value = value2[regionId],
                                 subtitle = subtitle,
                                 color = colorScheme[box],
                                 icon = valueBoxIcons[[layerId]]
