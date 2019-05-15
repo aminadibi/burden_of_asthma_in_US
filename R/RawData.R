@@ -13,6 +13,7 @@ RawData <- R6Class(
     fileName = NULL,
     allData = NULL,
     cleanedData = NULL,
+    cleanedFinalData = NULL,
     reName = NULL,
     reNameIndices = NULL,
     annualSums = NULL,
@@ -23,19 +24,22 @@ RawData <- R6Class(
     minOverYearsPerCapita = NULL,
     censusData = NULL,
     keywordsToRemove = NULL,
+    totalNames = NULL,
 
     # Constructor
     initialize = function(
       fileName, dataSubClasses,
       reNameIndices = NULL,
       reName = NULL,
-      keywordsToRemove = NULL
+      keywordsToRemove = NULL,
+      totalNames = NULL
     ){
       self$fileName = fileName
       self$dataSubClasses = dataSubClasses
       self$reName = reName
       self$reNameIndices = reNameIndices
       self$keywordsToRemove = keywordsToRemove
+      self$totalNames = totalNames
       self$readCsv()
     },
 
@@ -51,15 +55,16 @@ RawData <- R6Class(
         options = levels(data)
         fixedOptions = dataSubClass$fixSpelling(options)
         levels(data) = fixedOptions
-        dataSubClass$cleanData(fixedOptions, self$keywordsToRemove)
+        dataSubClass$cleanData(fixedOptions, self$totalNames)
         self$allData[[className]] = data
+
       }
       if(!is.null(self$reName)){
         dataNames = names(self$allData)
         dataNames[self$reNameIndices] = self$reName
         names(self$allData) = dataNames
       }
-
+      self$removeRows(self$keywordsToRemove, names(self$dataSubClasses))
     },
 
     # MODIFIES: this
@@ -82,6 +87,22 @@ RawData <- R6Class(
       self$censusData = censusData
     },
 
+    # REQUIRES: keywordsToRemove is a vector of options to remove, e.g. c("Total", "AllSex")
+    # EFFECTS: removes row with cell of a given keyword
+    removeRows = function(keywordsToRemove, columnNames){
+        data = self$allData
+        for(keyword in keywordsToRemove){
+            for(columnName in columnNames){
+                dataColumn = data[[columnName]]
+                indices = which(dataColumn==keyword)
+                if(length(indices)!=0){
+                    data = data[-indices,]
+                }
+            }
+        }
+        self$cleanedFinalData = data
+    },
+
     # REQUIRES: regionType is a string for the column containing regions, i.e. State, Province, County
     #           valueNames is a list of column names containing the values to be used e.g. indirectCost
     #           layerNames is the layers on the map, e.g. overall and perCapita
@@ -89,49 +110,48 @@ RawData <- R6Class(
     # EFFECTS: generate the annual total values for each data sub class by region
     #          and generate the total values per capita
     generateAnnualSums = function(regionType, valueNames, subsetName, layerNames){
-      layerFunctions = c("identityFunction", "perCapitaFunction")
-      years = as.numeric(self$dataSubClasses$Year$options)
-      regions = self$dataSubClasses$State$options
-      annualSums = list()
-      annualSumsPerCapita = list()
-      layer = 1
-      for(layerName in layerNames){
-        layerFunction = layerFunctions[layer]
-      for(year in years){
-        sumOneYearAllValueTypes = list()
-        totalFrame = data.frame(region=regions, value=rep(0, length(regions)))
-        sumOneYearAllValueTypes$total = totalFrame
-        init = TRUE
-        oneYear = self$subsetData(self$allData, list("Year", year))
-        i = 1
+        layerFunctions = c("identityFunction", "perCapitaFunction")
+        years = as.numeric(self$dataSubClasses$Year$options)
+        regions = self$dataSubClasses$State$options
+        annualSums = list()
+        annualSumsPerCapita = list()
+        layer = 1
+        for(layerName in layerNames){
+            layerFunction = layerFunctions[layer]
+            for(year in years){
+                sumOneYearAllValueTypes = list()
+                totalFrame = data.frame(region=regions, value=rep(0, length(regions)))
+                sumOneYearAllValueTypes$total = totalFrame
+                init = TRUE
+                oneYear = self$subsetData(self$cleanedFinalData, list("Year", year))
+                i = 1
+                for(region in regions){
+                    regionYear = self$subsetData(oneYear, list(regionType, region))
+                    total = 0
 
-        for(region in regions){
-        regionYear = self$subsetData(oneYear, list(regionType, region))
-        total = 0
+                    for(valueName in valueNames){
+                        valueSum = sum(as.numeric(regionYear[[valueName]]))
+                        if(init){
+                            sumOneYearOneValueType = data.frame(region=regions, value=rep(0, length(regions)))
+                            sumOneYearAllValueTypes[[valueName]] = sumOneYearOneValueType
+                            sumOneYearTotal = sumOneYearOneValueType
+                        }
 
-        for(valueName in valueNames){
-          valueSum = sum(as.numeric(regionYear[[valueName]]))
-          if(init){
-            sumOneYearOneValueType = data.frame(region=regions, value=rep(0, length(regions)))
-            sumOneYearAllValueTypes[[valueName]] = sumOneYearOneValueType
-            sumOneYearTotal = sumOneYearOneValueType
-          }
+                        valueSumTransform = self[[layerFunction]](region, valueSum)
+                        sumOneYearAllValueTypes[[valueName]]$value[i] = valueSumTransform
+                        total = sum(total, valueSumTransform)
 
-          valueSumTransform = self[[layerFunction]](region, valueSum)
-          sumOneYearAllValueTypes[[valueName]]$value[i] = valueSumTransform
-          total = sum(total, valueSumTransform)
-
+                    }
+                    sumOneYearAllValueTypes$total$value[i] = total
+                    init = FALSE
+                    i = i+1
+                }
+                annualSums[[year]] = sumOneYearAllValueTypes
+            }
+            self$annualSums[[subsetName]][[layerName]] = annualSums
+            layer = layer + 1
         }
-        sumOneYearAllValueTypes$total$value[i] = total
-        init = FALSE
-        i = i+1
-        }
-        annualSums[[year]] = sumOneYearAllValueTypes
-      }
-      self$annualSums[[subsetName]][[layerName]] = annualSums
-      layer = layer + 1
-      }
-      self$generateAnnualMaxMin(c("total"), subsetName, layerNames)
+        self$generateAnnualMaxMin(c("total"), subsetName, layerNames)
     },
 
     # REQUIRES: region is a Province/State/County

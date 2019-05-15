@@ -156,6 +156,17 @@ LeafletMap <- R6Class(
                  htmlwidgets::onRender(
                     "function(el, x) {
                     L.control.zoom({ position: 'topright' }).addTo(this)}") # move zoom control to top right
+        m = m %>% htmlwidgets::onRender("
+            function(el, x) {
+            var myMap = this;
+            myMap.on('baselayerchange',
+                function (e) {
+                    console.log(x);
+                    console.log(el);
+                    console.log(myMap);
+                    myMap.fire('click', {latlng:[36,-102]});
+                })
+            }")
       return(m)
       },
 
