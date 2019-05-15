@@ -277,6 +277,7 @@ server <- function(input, output, session) {
                         input[[tabItemsList[[tabNumber()]]$sliderId]] - 2000
                     })
 
+
                     output[[mapOutputId]] <- renderLeaflet({
                         print(year())
                         leafletMap()$drawMap(year())
@@ -311,6 +312,12 @@ server <- function(input, output, session) {
                                                                } else {
                                                                if(is.null(clickEvent$lng)) {
                                                                    baseLayerChange = T
+                                                                   print(value$layer)
+                                                                   if(value$layer==1){
+                                                                       value$layer = 2
+                                                                   } else {
+                                                                       value$layer = 1
+                                                                   }
                                                                } else {
                                                                    baseLayerChange = F
                                                                }
@@ -326,11 +333,12 @@ server <- function(input, output, session) {
                                                                    print(shapeValue)
                                                                    layer = shapeValue[2]
                                                                    region = paste0(shapeValue[3], "_", shapeValue[4])
-                                                                   if(layer=="1"){
-                                                                       return(paste0("layer_2_", region))
-                                                                   } else {
-                                                                       return(paste0("layer_1_", region))
-                                                                   }
+                                                                   return(paste0("layer_", value$layer, "_", region))
+                                                                   # if(layer=="1"){
+                                                                   #     return(paste0("layer_2_", region))
+                                                                   # } else {
+                                                                   #     return(paste0("layer_1_", region))
+                                                                   # }
                                                                } else {
                                                                    return(input[[mapShapeClick]]$id)
                                                                }
