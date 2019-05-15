@@ -315,7 +315,13 @@ server <- function(input, output, session) {
                                                                    baseLayerChange = F
                                                                }
                                                                if(baseLayerChange) {
-                                                                   shapeValue = strsplit(input[[mapShapeClick]]$id, "_")[[1]]
+
+                                                                   if(is.null(input[[mapShapeClick]])) {
+                                                                       shapeId = "layer_1_region_1"
+                                                                   } else {
+                                                                       shapeId = input[[mapShapeClick]]$id
+                                                                   }
+                                                                   shapeValue = strsplit(shapeId, "_")[[1]]
                                                                    print("Changing")
                                                                    print(shapeValue)
                                                                    layer = shapeValue[2]
