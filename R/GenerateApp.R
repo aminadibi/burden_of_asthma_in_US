@@ -20,7 +20,7 @@ dataSubClasses = list(
   "Age"=DataSubClass$new(dataSubClassNames[4], totalNames[4])
 )
 
-fileName = paste0("static_data/WEBAPP_US.csv")
+fileName = paste0("static_data/WEBAPP_US_20190514.csv")
 reNameIndices = c(5,6,7)
 reName = c("directCost", "indirectCost", "qalysLost")
 
