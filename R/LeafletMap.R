@@ -170,21 +170,21 @@ LeafletMap <- R6Class(
       return(m)
       },
 
-    # REQUIRES: layerName is string, e.g. overall or perCapita
+    # REQUIRES: layer is integer value of map layer
     #           valueName is name of column queried, e.g. directCost
     #           year is an integer within valid years
     # EFFECTS:  gets the data for the given layer, year, and value type
     #           to present in the valueBox
     getLayerValueData = function(
-      layerName, valueName, year
+      layer, valueName, year
     ){
-      layerValueData = self$rawData$annualSums[[self$mapName]][[layerName]][[year]][[valueName]]$value
+      layerValueData = self$rawData$annualSums[[self$mapName]][[layer]][[year]][[valueName]]$value
       million = 1000000
       mill = max(layerValueData)/million
       if(mill > 1){
         layerValueData = costToMill(layerValueData)
       } else {
-        layerValueData = round(layerValueData, 1)
+        layerValueData = round(layerValueData, self$digits[layer])
       }
       return(layerValueData)
     },
