@@ -61,7 +61,7 @@
             ],
           "groups" : ["Overall Cost","Cost per Capita"],
           "plotLabels" : ["Cost: $","Cost/Person: $"],
-          "digits" : [-5, -1],
+          "digits" : [-5, 1],
           "dense" : [false, true],
           "legendLabels" : ["legend1", "legend2"],
           "prefix": ["$", "$"]
@@ -106,8 +106,8 @@
         "valueBoxWidths": [12],
         "tabNumber": 3,
         "layerChoices": [{
-          "label":"QALYs Lost",
-          "valueName": "qalysLost"
+            "label":"QALYs Lost",
+            "valueName": "qalysLost"
         }],
         "leafletMap": {
           "mapName": "mapThree",
@@ -115,19 +115,28 @@
           "palette" :[{
             "label":"custom",
             "value":"custom"
+          },
+          {
+              "label": "custom",
+              "value": "custom"
           }],
-          "numLayers":  1,
+          "numLayers":  2,
           "layerChoices" : [
             {
-              "label":"QALYs Lost",
-              "value":"overall"}
+                "label":"QALYs Lost",
+                "value":"overall"},
+            {
+                "label": "QALYs Lost per Capita",
+                "value": "perCapita"
+
+            }
             ],
-          "groups" : ["QALYs Lost"],
-          "plotLabels" : ["QALYs Lost: "],
-          "digits" : [0],
-          "dense" : [true],
-          "legendLabels" : ["legend3"],
-          "prefix": [""]
+          "groups" : ["QALYs Lost", "QALYs Lost per Capita"],
+          "plotLabels" : ["QALYs Lost: ", "QALYs Lost per Capita: "],
+          "digits" : [0, 4],
+          "dense" : [true, false],
+          "legendLabels" : ["legend3", "legend4"],
+          "prefix": ["", ""]
         }
       },
       {

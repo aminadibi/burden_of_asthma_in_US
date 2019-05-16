@@ -9,13 +9,13 @@ RawData <- R6Class(
   public = list(
 
     # Fields
-    dataSubClasses = NULL,
-    fileName = NULL,
+    dataSubClasses = NULL, # DataSubClass
+    fileName = NULL, # string : name of file containing data
     allData = NULL,
     cleanedData = NULL,
-    cleanedFinalData = NULL,
-    reName = NULL,
-    reNameIndices = NULL,
+    cleanedFinalData = NULL, # data.frame : used in annual sums
+    reName = NULL, # [string] : list of new column names
+    reNameIndices = NULL, # [integer] : indices of column names to change
     annualSums = NULL,
     annualSumsPerCapita = NULL,
     maxOverYears = NULL,
@@ -43,7 +43,9 @@ RawData <- R6Class(
       self$readCsv()
     },
 
-    # EFFECTS: reads data file
+    # EFFECTS: reads data file,
+    #          allData: fixes any spelling errors, fixes options for each column
+    #          cleanedFinalData: removes specified rows (keywordsToRemove)
     readCsv = function(){
       csv = read.csv(self$fileName)
       self$allData = csv
@@ -137,7 +139,7 @@ RawData <- R6Class(
                             sumOneYearTotal = sumOneYearOneValueType
                         }
 
-                        valueSumTransform = self[[layerFunction]](region, valueSum)
+                        valueSumTransform = self[[layerFunction]](region, valueSum, year)
                         sumOneYearAllValueTypes[[valueName]]$value[i] = valueSumTransform
                         total = sum(total, valueSumTransform)
 
@@ -158,25 +160,26 @@ RawData <- R6Class(
     #           valueSum is the value for that region
     # EFFECTS:  returns valueSum unchanged
     identityFunction = function(
-      region, valueSum
+      region, valueSum, year
     ){
       return(valueSum)
     },
 
     # REQUIRES: region is a Province/State/County
     #           valueSum is the value for that region
+    #           year is the year in form -2000 e.g. 2019 = 19, etc
     # MODIFIES: valueSum
     # EFFECTS:  finds the population for that region and
     #           divides valueSum by it
     perCapitaFunction = function(
-      region, valueSum
+      region, valueSum, year
     ){
       censusIndex = which(self$censusData$data$region==region)
       if(length(censusIndex)==0){
         stop("One of your data region names does not match the official names. Please correct your data.")
         sout(region)
       }
-      censusValue = as.numeric(self$censusData$data$population[censusIndex])
+      censusValue = as.numeric(self$censusData$projectedPopulation[[year]][censusIndex])
       return(valueSum/censusValue)
     },
 
