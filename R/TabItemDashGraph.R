@@ -155,8 +155,8 @@ TabItemDashGraph <- R6Class(
             )))
             },
 
-#EFFECTS: given a list of DataSubClass objects, create the sidebar menu based off
-        # the options pulled from the csv file
+    #EFFECTS: given a list of DataSubClass objects, create the sidebar menu based off
+    # the options pulled from the csv file
     #' @param dataSubClasses list of type DataSubClass
     generateSidebarChoicesData = function(dataSubClasses){
       if(!is.list(dataSubClasses)){
@@ -208,30 +208,29 @@ TabItemDashGraph <- R6Class(
     }
   },
 
-makeMainPanel = function(){
+    makeMainPanel = function(){
 
-  # Graph Output
-  b = plotlyOutput(outputId = self$graphOutputId)
-  # Download Data Button
-  c = div(id = self$downloadInputId,
+        # Graph Output
+        b = plotlyOutput(outputId = self$graphOutputId)
+        # Download Data Button
+        c = div(id = self$downloadInputId,
           downloadButton(self$downloadOutputId,
                          self$downloadLabel))
-  #d = div(id="series_chart_div", style="width: 900px; height: 500px;")
-  # Google Chart Output
-  e = googleChartOutput(outputId=self$googleChartOutputId)
+        #d = div(id="series_chart_div", style="width: 900px; height: 500px;")
+        # Google Chart Output
+        e = googleChartOutput(outputId=self$googleChartOutputId)
 
-  if(self$dropdown){
-    # Dropdown Menu for Graph
-    a = selectizeInput(inputId=self$dropdownId,
+        if(self$dropdown){
+        # Dropdown Menu for Graph
+        a = selectizeInput(inputId=self$dropdownId,
                        label="",
                        options = list(style="z-index:100;"),
                        choices = self$dropdownChoices,
                        selected = self$dropdownSelected)
-    return(list(a,e))} else {
-      return(list(e))
+        return(list(a,e))} else {
+            return(list(e))
+        }
     }
-
-}
 
 
   ))
