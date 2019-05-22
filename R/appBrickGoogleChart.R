@@ -1,15 +1,24 @@
 
 shinyGoogleChart = function(tabNumber, tabItemsList, input, appData, rawData, chartType){
+
+    labels = c("QALYs Lost", "Indirect Cost", "Direct Cost")
+    values = c("qalysLost", "indirectCost", "directCost")
+    labelValueList = data.frame(labels, values)
+
     selectedTabItem = tabItemsList[[tabNumber]]
     sidebarShownIds = selectedTabItem$sidebarShownIds
     googleChartId = tabItemsList[[tabNumber]]$googleChartOutputId
     year = input[[sidebarShownIds[5]]]
-    xAxis = input[[sidebarShownIds[1]]]
-    yAxis = input[[sidebarShownIds[2]]]
+    xAxisLabel = input[[sidebarShownIds[1]]]
+    xAxis = convertLabelToValue(xAxisLabel, labelValueList)
+    yAxisLabel = input[[sidebarShownIds[2]]]
+    yAxis = convertLabelToValue(yAxisLabel, labelValueList)
     state1 = input[[sidebarShownIds[3]]]
     state2 = input[[sidebarShownIds[4]]]
-    color = input[[sidebarShownIds[6]]]
-    size = input[[sidebarShownIds[7]]]
+    colorLabel = input[[sidebarShownIds[6]]]
+    sizeLabel = input[[sidebarShownIds[7]]]
+    color = convertLabelToValue(colorLabel, labelValueList)
+    size = convertLabelToValue(sizeLabel, labelValueList)
     id = appData$tabs$column0[[tabNumber]]
 
     if (color == "None") {
@@ -43,6 +52,8 @@ shinyGoogleChart = function(tabNumber, tabItemsList, input, appData, rawData, ch
                 "55 to 59 years",
                 "60 to 64 years",
                 "65 to 69 years",
+                "70 to 74 years",
+                "75 to 79 years",
                 "80 to 84 years"
             )
         ),
@@ -53,7 +64,7 @@ shinyGoogleChart = function(tabNumber, tabItemsList, input, appData, rawData, ch
         title = "",
         elementId = googleChartId,
         chartType = chartType,
-        headerTitles = c(id, xAxis, yAxis, color, size),
+        headerTitles = c(id, xAxisLabel, yAxisLabel, colorLabel, sizeLabel),
         data = data,
         column0 = id,
         column1 = xAxis,
@@ -65,6 +76,22 @@ shinyGoogleChart = function(tabNumber, tabItemsList, input, appData, rawData, ch
         transform = TRUE
     )
     return(chart)
+}
+
+
+
+convertLabelToValue = function(label, labelValueFrame) {
+
+    values = labelValueFrame$values
+    labels = labelValueFrame$labels
+    for(index in 1:length(values)) {
+        labelKey = as.vector(labels[index])
+        value = as.vector(values[index])
+        if(label == labelKey) {
+            return(value)
+        }
+    }
+    return(label)
 }
 
 
