@@ -176,9 +176,10 @@ server <- function(input, output, session) {
                                 types[index], index, types,
                                 tabItemsList[[tabNumber()]]$sidebarHiddenChoices[[index]],
                                 allValues[index])
+                            selected = getSelected(updateOptions, isolate(input), index, sidebarIds())
                             if(updateOptions!=FALSE){
                                 updateSelectInput(session, ids[index], label = labels[index],
-                                                  choices = updateOptions)}
+                                                  choices = updateOptions, selected = selected)}
                         })
                     })
                     output[[googleChartId]] = renderGoogleChart({

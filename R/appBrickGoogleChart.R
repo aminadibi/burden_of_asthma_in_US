@@ -1,8 +1,8 @@
 
 shinyGoogleChart = function(tabNumber, tabItemsList, input, appData, rawData, chartType){
 
-    labels = c("QALYs Lost", "Indirect Cost", "Direct Cost")
-    values = c("qalysLost", "indirectCost", "directCost")
+    labels = c("QALYs Lost", "Indirect Cost", "Direct Cost", "Year Combined")
+    values = c("qalysLost", "indirectCost", "directCost", "yearCombined")
     labelValueList = data.frame(labels, values)
 
     selectedTabItem = tabItemsList[[tabNumber]]
@@ -21,21 +21,21 @@ shinyGoogleChart = function(tabNumber, tabItemsList, input, appData, rawData, ch
     size = convertLabelToValue(sizeLabel, labelValueList)
     id = appData$tabs$column0[[tabNumber]]
 
-    if (color == "None") {
+    if (colorLabel == "None") {
         color = NULL
     }
-    if (size == "None") {
+    if (sizeLabel == "None") {
         size = NULL
 
     }
-    if (year == "All Years") {
+    if (year == "All Years" || xAxis == "yearCombined" || yAxis == "yearCombined") {
         year = c(19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35,
                  36, 37, 38)
     } else {
         year = as.numeric(year) - 2000
     }
     data = rawData$subsetData(
-        rawData$cleanedData,
+        rawData$transformedData,
         list("State", c(state1, state2)),
         list("Sex", c("Female", "Male")),
         list(
@@ -71,7 +71,7 @@ shinyGoogleChart = function(tabNumber, tabItemsList, input, appData, rawData, ch
         column2 = yAxis,
         column3 = color,
         column4 = size,
-        keyColumns = appData$data$classNames,
+        keyColumns = appData$data$transformNames,
         valueColumns = appData$data$valueNames,
         transform = TRUE
     )
@@ -93,6 +93,5 @@ convertLabelToValue = function(label, labelValueFrame) {
     }
     return(label)
 }
-
 
 
