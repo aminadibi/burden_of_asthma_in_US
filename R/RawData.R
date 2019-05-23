@@ -14,6 +14,7 @@ RawData <- R6Class(
     allData = NULL,
     cleanedData = NULL,
     cleanedFinalData = NULL, # data.frame : used in annual sums
+    transformedData = NULL,
     reName = NULL, # [string] : list of new column names
     reNameIndices = NULL, # [integer] : indices of column names to change
     annualSums = NULL,
