@@ -8,11 +8,12 @@ source("R/TabItemDashText.R")
 source("R/LeafletMap.R")
 source("R/CensusDataUS.R")
 source("R/CountryBaseMap.R")
+source("R/TransformedData.R")
 
 appData = fromJSON("static_data/app.json")
 dataSubClassNames = appData$data$classNames
 totalNames = c("20Year", "US", "Allsex", "Allage")
-keywordsToRemove = c(totalNames, "total", "Total")
+keywordsToRemove = c(totalNames, "total", "Total", "")
 dataSubClasses = list(
   "Year"=DataSubClassYear$new(name = dataSubClassNames[1], totalName = totalNames[1], hasPrettyOptions = TRUE),
   "State"=DataSubClassState$new(dataSubClassNames[2], totalNames[2]),
@@ -30,6 +31,14 @@ censusData = CensusDataUS$new("US", 2017, populationGrowthFile, dataSubClasses$Y
 rawData$addCensusData(censusData)
 rawData$fixCellValues("Total", "Allage", "Age")
 
+transformedData = TransformedData$new(rawData$cleanedFinalData)
+transformedData$groupDataColumn(groupByColumn = "Year",
+                                groupType = "interval",
+                                newColumnName = "yearCombined",
+                                intervalSize = 5,
+                                intervalNames = c("2019 - 2023", "2024 - 2028", "2029 - 2033",
+                                                  "2034 - 2038"))
+rawData$transformedData = transformedData$data
 tabItemsList = list()
 for(i in 1:appData$appLayout$subTabs$number){
   tabType = appData$tabs$tabType[[i]]

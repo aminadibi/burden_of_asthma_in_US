@@ -17,7 +17,8 @@
     },
     "data": {
       "classNames": ["Year", "State", "Age", "Sex"],
-      "valueNames": ["qalysLost", "indirectCost", "directCost"]
+      "valueNames": ["qalysLost", "indirectCost", "directCost"],
+      "transformNames": ["Year", "State", "Age", "Sex", "yearCombined"]
 
     },
     "tabs":[
@@ -86,8 +87,8 @@
         "sidebarChoicesNumber" : 7,
         "sidebarShownLabels" : ["X-Axis", "Y-Axis", "State 1", "State 2", "Year","Color",
                              "Size"],
-        "columnOptions" : {"xAxis": ["Age", "Indirect Cost", "Direct Cost"],
-                           "yAxis": ["Age", "Indirect Cost", "Direct Cost"],
+        "columnOptions" : {"xAxis": ["Age", "Indirect Cost", "Direct Cost", "Year Combined"],
+                           "yAxis": ["Age", "Indirect Cost", "Direct Cost", "Year Combined"],
                            "state1": "generate",
                            "state2": "generate",
                            "year": "generate",
