@@ -18,7 +18,7 @@
     "data": {
       "classNames": ["Year", "State", "Age", "Sex"],
       "valueNames": ["qalysLost", "indirectCost", "directCost"],
-      "transformNames": ["Year", "State", "Age", "Sex", "yearCombined"]
+      "transformNames": ["Year", "State", "ageCombined", "Sex", "yearCombined"]
 
     },
     "tabs":[
@@ -87,12 +87,12 @@
         "sidebarChoicesNumber" : 7,
         "sidebarShownLabels" : ["X-Axis", "Y-Axis", "State 1", "State 2", "Year","Color",
                              "Size"],
-        "columnOptions" : {"xAxis": ["Age", "Indirect Cost", "Direct Cost", "Year Combined"],
-                           "yAxis": ["Age", "Indirect Cost", "Direct Cost", "Year Combined"],
+        "columnOptions" : {"xAxis": ["Age Groups", "Indirect Cost", "Direct Cost", "Year Combined"],
+                           "yAxis": ["Age Groups", "Indirect Cost", "Direct Cost", "Year Combined"],
                            "state1": "generate",
                            "state2": "generate",
                            "year": "generate",
-                           "color":["Age", "Sex", "None"],
+                           "color":["Age Groups", "Sex", "None"],
                            "size" : ["Indirect Cost", "Direct Cost", "None"]},
         "columnTypes" : ["x-axis", "y-axis", "State", "State", "Year", "color",
                       "size"],
@@ -156,12 +156,12 @@
         "sidebarShownLabels" : ["X-Axis", "Y-Axis", "State 1", "State 2", "Year","Color",
                              "Size"],
         "dropdown": false,
-        "columnOptions" : {"xAxis": ["Age", "QALYs Lost", "Year Combined"],
-                           "yAxis": ["Age", "QALYs Lost", "Year Combined"],
+        "columnOptions" : {"xAxis": ["Age Groups", "QALYs Lost", "Year Combined"],
+                           "yAxis": ["Age Groups", "QALYs Lost", "Year Combined"],
                            "state1": "generate",
                            "state2": "generate",
                            "year": "generate",
-                           "color":["Age", "Sex", "None"],
+                           "color":["Age Groups", "Sex", "None"],
                            "size" : ["QALYs Lost", "None"]},
         "columnTypes" : ["x-axis", "y-axis", "State", "State", "Year", "color",
                       "size"],

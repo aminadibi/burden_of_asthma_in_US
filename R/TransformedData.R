@@ -26,14 +26,14 @@ TransformedData <- R6Class(
         #' @param newColumnName string: name of the new column
         #' @param intervalSize integer: size of the interval to group by
         groupDataColumn = function(groupByColumn, groupType, newColumnName, intervalSize = NULL,
-                                   intervalNames = NULL) {
+                                   intervalNames = NULL, string = FALSE) {
 
             groupTypes = c("interval", "comparison")
             groupType = match.arg(groupType, groupTypes, several.ok = FALSE)
             column = self$data[[groupByColumn]]
 
             groups = switch(groupType,
-                            interval = self$groupByInterval(intervalSize, column, intervalNames),
+                            interval = self$groupByInterval(intervalSize, column, intervalNames, string),
                             comparison = self$comparison(column))
 
             self$data[[newColumnName]] = groups
@@ -42,8 +42,14 @@ TransformedData <- R6Class(
         #' @param intervalSize integer: size of the interval to group by
         #' @param column data column
         #' @param intervalNames string list: list of names for each interval
-        groupByInterval = function(intervalSize, column, intervalNames) {
-            column = as.numeric(as.character(column))
+        #' @param string boolean: whether the column contains strings
+        groupByInterval = function(intervalSize, column, intervalNames, string = FALSE) {
+            if(string) {
+                columnOptions = as.character(unique(column))
+                column = match(as.character(column), columnOptions)
+            } else {
+                column = as.numeric(as.character(column))
+            }
             lower = min(column, na.rm = TRUE)
             lowerModulo = lower %% intervalSize
             lowerDivisors = c()
@@ -58,7 +64,7 @@ TransformedData <- R6Class(
             for(cell in column) {
                 modulo = cell %% intervalSize
                 divisor = floor(cell / intervalSize)
-                index = (modulo - lowerModulo) %% 5 + 1
+                index = (modulo - lowerModulo) %% intervalSize + 1
                 group = divisor - lowerDivisors[index] + 1
                 group = intervalNames[group]
                 groups = c(groups, group)

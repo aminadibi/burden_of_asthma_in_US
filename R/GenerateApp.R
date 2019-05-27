@@ -38,6 +38,19 @@ transformedData$groupDataColumn(groupByColumn = "Year",
                                 intervalSize = 5,
                                 intervalNames = c("2019 - 2023", "2024 - 2028", "2029 - 2033",
                                                   "2034 - 2038"))
+transformedData$groupDataColumn(groupByColumn = "Age",
+                                groupType = "interval",
+                                newColumnName = "ageCombined",
+                                intervalSize = 2,
+                                intervalNames = c("15 to 24 years",
+                                                  "25 to 34 years",
+                                                  "35 to 44 years",
+                                                  "45 to 54 years",
+                                                  "55 to 64 years",
+                                                  "65 to 74 years",
+                                                  "75 to 84 years",
+                                                  "85 and over"),
+                                string = TRUE)
 rawData$transformedData = transformedData$data
 tabItemsList = list()
 for(i in 1:appData$appLayout$subTabs$number){
