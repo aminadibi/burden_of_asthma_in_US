@@ -54,7 +54,8 @@ shinyGoogleChart = function(tabNumber, tabItemsList, input, appData, rawData, ch
                 "65 to 69 years",
                 "70 to 74 years",
                 "75 to 79 years",
-                "80 to 84 years"
+                "80 to 84 years",
+                "85 and over"
             )
         ),
         list("Year", year)
