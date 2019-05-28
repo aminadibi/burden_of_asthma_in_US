@@ -1,8 +1,8 @@
 
 shinyGoogleChart = function(tabNumber, tabItemsList, input, appData, rawData, chartType){
 
-    labels = c("QALYs Lost", "Indirect Cost", "Direct Cost", "Year Combined")
-    values = c("qalysLost", "indirectCost", "directCost", "yearCombined")
+    labels = c("QALYs Lost", "Indirect Cost", "Direct Cost", "Year Combined", "Age Groups")
+    values = c("qalysLost", "indirectCost", "directCost", "yearCombined", "ageCombined")
     labelValueList = data.frame(labels, values)
 
     selectedTabItem = tabItemsList[[tabNumber]]
