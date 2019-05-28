@@ -24,9 +24,7 @@ library(leaflet)
 library(raster)
 library(rgeos)
 source("./R/Census.R")
-source("./R/MapData.R")
 source("./R/helper_functions.R")
-source("./R/AppLayout.R")
 source("./R/DashGraph.R")
 source("./R/LeafletMap.R")
 source("./R/CountryBaseMap.R")
@@ -49,7 +47,7 @@ initialize = TRUE
 cat("~~~ Starting UI ~~~", fill = T)
 
 ui <- dashboardPage(
-    skin = appLayout$dashboardColour,
+    skin = appData$appLayout$dashboardColour,
 
     # header
     dashboardHeader(title = appData$title, titleWidth = 320),

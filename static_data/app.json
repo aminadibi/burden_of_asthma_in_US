@@ -12,7 +12,8 @@
           "About",
           "Terms"]
       },
-      "colorScheme":"startup"
+      "colorScheme":"startup",
+      "dashboardColour": "cg-blue"
 
     },
     "data": {

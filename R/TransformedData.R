@@ -25,6 +25,7 @@ TransformedData <- R6Class(
         #' @param groupType function to group by, one of {interval, comparison}
         #' @param newColumnName string: name of the new column
         #' @param intervalSize integer: size of the interval to group by
+        #' @param string boolean: whether the column contains strings
         groupDataColumn = function(groupByColumn, groupType, newColumnName, intervalSize = NULL,
                                    intervalNames = NULL, string = FALSE) {
 
