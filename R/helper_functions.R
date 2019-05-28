@@ -183,9 +183,9 @@ sout <- function(...){
 
 }
 
-# REQUIRES: wordsToCheck is either a string, or a list of strings
 # EFFECTS: uses hunspell package to check if the word is spelled correctly
 #          return suggested spelling
+#' @param wordsToCheck either a string, or list of strings
 spellCheck <- function(wordsToCheck){
   wordsToCheck = c(wordsToCheck)
   correctedWords = c()

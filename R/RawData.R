@@ -73,6 +73,9 @@ RawData <- R6Class(
     # MODIFIES: this
     # EFFECTS: given a cell value to find and cell value to insert,
     #          edit any cells matching in the column provided
+    #' @param valueToFind cell value to find
+    #' @param valueToInsert cell value to insert
+    #' @param columnName string: column to search
     fixCellValues = function(valueToFind, valueToInsert, columnName){
       data = self$allData
       dataColumn = data[[columnName]]
@@ -82,16 +85,17 @@ RawData <- R6Class(
 
     },
 
-    # REQUIRES: censusData is a type or subtype of CensusData
     # EFFECTS: add census data
+    #' @param censusData type or subtype of CensusData
     addCensusData = function(
       censusData
     ){
       self$censusData = censusData
     },
 
-    # REQUIRES: keywordsToRemove is a vector of options to remove, e.g. c("Total", "AllSex")
     # EFFECTS: removes row with cell of a given keyword
+    #' @param keywordsToRemove vector of options to remove, e.g. c("Total", "AllSex)
+    #' @param columnNames c(string): vector of column names to search
     removeRows = function(keywordsToRemove, columnNames){
         data = self$allData
         for(keyword in keywordsToRemove){
@@ -106,12 +110,12 @@ RawData <- R6Class(
         self$cleanedFinalData = data
     },
 
-    # REQUIRES: regionType is a string for the column containing regions, i.e. State, Province, County
-    #           valueNames is a list of column names containing the values to be used e.g. indirectCost
-    #           layerNames is the layers on the map, e.g. overall and perCapita
     # MODIFIES: this
     # EFFECTS: generate the annual total values for each data sub class by region
     #          and generate the total values per capita
+    #' @param regionType string: name of column containing regions, i.e. State, Province, County
+    #' @param valueNames c(string): vector of column names containing the values to be used e.g. indirectCost
+    #' @param layerNames c(string): vector of layers on the map, e.g. overall and perCapita
     generateAnnualSums = function(regionType, valueNames, subsetName, layerNames){
         layerFunctions = c("identityFunction", "perCapitaFunction")
         years = as.numeric(self$dataSubClasses$Year$options)
@@ -157,21 +161,22 @@ RawData <- R6Class(
         self$generateAnnualMaxMin(c("total"), subsetName, layerNames)
     },
 
-    # REQUIRES: region is a Province/State/County
-    #           valueSum is the value for that region
     # EFFECTS:  returns valueSum unchanged
+    #' @param region string: name of a Province/State/County
+    #' @param valueSum any: value for that region
+    #' @param year integer: year in form -2000 e.g. 2019 = 19, etc
     identityFunction = function(
       region, valueSum, year
     ){
       return(valueSum)
     },
 
-    # REQUIRES: region is a Province/State/County
-    #           valueSum is the value for that region
-    #           year is the year in form -2000 e.g. 2019 = 19, etc
     # MODIFIES: valueSum
     # EFFECTS:  finds the population for that region and
     #           divides valueSum by it
+    #' @param region string: name of a Province/State/County
+    #' @param valueSum any: value for that region
+    #' @param year integer: year in form -2000 e.g. 2019 = 19, etc
     perCapitaFunction = function(
       region, valueSum, year
     ){

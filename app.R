@@ -26,9 +26,7 @@ library(leaflet)
 library(raster)
 library(rgeos)
 source("./R/Census.R")
-source("./R/MapData.R")
 source("./R/helper_functions.R")
-source("./R/AppLayout.R")
 source("./R/DashGraph.R")
 source("./R/LeafletMap.R")
 source("./R/CountryBaseMap.R")
@@ -51,7 +49,7 @@ initialize = TRUE
 cat("~~~ Starting UI ~~~", fill = T)
 
 ui <- dashboardPage(
-    skin = appLayout$dashboardColour,
+    skin = appData$appLayout$dashboardColour,
 
     # header
     dashboardHeader(title = appData$title, titleWidth = 320),
@@ -59,15 +57,22 @@ ui <- dashboardPage(
     dashboardSidebar(
         sidebarMenu(
             id = "selectedTab",
-            menuItem(tab_titles[1],tabName = "costTab",icon = icon("dollar sign", lib = "font-awesome"),
-                menuSubItem("Map",tabName = appData$tabs$inputId[1],
-                            icon = icon("globe americas", lib = "font-awesome")),
-                menuSubItem("Graph",tabName = appData$tabs$inputId[2],
+            menuItem(
+                tab_titles[1],
+                tabName = appData$appLayout$mainTabs$tabIds[1],
+                icon = icon("dollar sign", lib = "font-awesome"),
+                menuSubItem(
+                    "Map",
+                    tabName = appData$tabs$inputId[1],
+                    icon = icon("globe americas", lib = "font-awesome")),
+                menuSubItem(
+                    "Graph",
+                    tabName = appData$tabs$inputId[2],
                     icon = icon("bar-chart", lib = "font-awesome"))
             ),
             menuItem(
                 tab_titles[2],
-                tabName = "qalyTab",
+                tabName = appData$appLayout$mainTabs$tabIds[2],
                 icon = icon("sort numeric up", lib = "font-awesome"),
                 menuSubItem(
                     "Map",
@@ -80,7 +85,6 @@ ui <- dashboardPage(
                     icon = icon("bar-chart", lib = "font-awesome")
                 )
             ),
-
             menuItem(
                 tab_titles[3],
                 tabName = appData$tabs$inputId[5],
@@ -339,8 +343,6 @@ server <- function(input, output, session) {
                                                         # update the location selectInput on map clicks
                                                         input[[mapShapeClick]]$id
                                                     })
-
-                            #layerRegionId <- region()
                             layerRegionId <- layerRegionId()
                             if (is.null(layerRegionId)) {
                                 layerRegionId <- "layer_1_region_1"

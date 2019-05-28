@@ -170,11 +170,11 @@ LeafletMap <- R6Class(
       return(m)
       },
 
-    # REQUIRES: layer is integer value of map layer
-    #           valueName is name of column queried, e.g. directCost
-    #           year is an integer within valid years
     # EFFECTS:  gets the data for the given layer, year, and value type
     #           to present in the valueBox
+    #' @param layer integer: value of the map layer
+    #' @param valueName string: name of the column queried, e.g. directCost
+    #' @param year integer: within valid years
     getLayerValueData = function(
       layer, valueName, year
     ){
@@ -204,12 +204,6 @@ LeafletMap <- R6Class(
       self$layerIds = layerIds
 
     }
-
-
-
-
-
-
   )
   )
 

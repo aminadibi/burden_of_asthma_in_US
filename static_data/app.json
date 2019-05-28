@@ -3,7 +3,8 @@
     "appLayout": {
       "mainTabs": {
         "number": 4,
-        "titles": ["Costs", "QALYs", "About", "Terms"]
+        "titles": ["Costs", "QALYs", "About", "Terms"],
+        "tabIds": ["costTab", "qalyTab", "tab5", "tab6"]
       },
       "subTabs": {
         "number":6,
@@ -12,7 +13,8 @@
           "About",
           "Terms"]
       },
-      "colorScheme":"startup"
+      "colorScheme":"startup",
+      "dashboardColour": "cg-blue"
 
     },
     "data": {
