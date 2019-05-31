@@ -13,8 +13,9 @@ RawData <- R6Class(
     fileName = NULL, # string : name of file containing data
     allData = NULL,
     cleanedData = NULL,
-    cleanedFinalData = NULL, # data.frame : used in annual sums
-    transformedData = NULL,
+    cleanedFinalData = list(), # data.frame : used in annual sums
+    cleanedChartData = NULL,
+    transformedData = NULL, # data.frame : used for googleCharts
     reName = NULL, # [string] : list of new column names
     reNameIndices = NULL, # [integer] : indices of column names to change
     annualSums = NULL,
@@ -67,7 +68,7 @@ RawData <- R6Class(
         dataNames[self$reNameIndices] = self$reName
         names(self$allData) = dataNames
       }
-      self$removeRows(self$keywordsToRemove, names(self$dataSubClasses))
+      self$removeRows(self$keywordsToRemove, names(self$dataSubClasses), "primary")
     },
 
     # MODIFIES: this
@@ -96,7 +97,8 @@ RawData <- R6Class(
     # EFFECTS: removes row with cell of a given keyword
     #' @param keywordsToRemove vector of options to remove, e.g. c("Total", "AllSex)
     #' @param columnNames c(string): vector of column names to search
-    removeRows = function(keywordsToRemove, columnNames){
+    #' @param dataName string: name to be given to find data frame
+    removeRows = function(keywordsToRemove, columnNames, dataName){
         data = self$allData
         for(keyword in keywordsToRemove){
             for(columnName in columnNames){
@@ -107,7 +109,7 @@ RawData <- R6Class(
                 }
             }
         }
-        self$cleanedFinalData = data
+        self$cleanedFinalData[[dataName]] = data
     },
 
     # MODIFIES: this
@@ -130,7 +132,7 @@ RawData <- R6Class(
                 totalFrame = data.frame(region=regions, value=rep(0, length(regions)))
                 sumOneYearAllValueTypes$total = totalFrame
                 init = TRUE
-                oneYear = self$subsetData(self$cleanedFinalData, list("Year", year))
+                oneYear = self$subsetData(self$cleanedFinalData$primary, list("Year", year))
                 i = 1
                 for(region in regions){
                     regionYear = self$subsetData(oneYear, list(regionType, region))
