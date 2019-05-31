@@ -9,6 +9,7 @@ source("R/LeafletMap.R")
 source("R/CensusDataUS.R")
 source("R/CountryBaseMap.R")
 source("R/TransformedData.R")
+source("R/ColumnOptionsObject.R")
 
 appData = fromJSON("static_data/app.json")
 dataSubClassNames = appData$data$classNames
@@ -30,8 +31,10 @@ rawData = RawData$new(fileName, dataSubClasses, reNameIndices, reName, keywordsT
 censusData = CensusDataUS$new("US", 2017, populationGrowthFile, dataSubClasses$Year$prettyOptions[1])
 rawData$addCensusData(censusData)
 rawData$fixCellValues("Total", "Allage", "Age")
+chartKeywordsToRemove = c("20Year", "Allsex", "Allage", "total", "Total", "")
+rawData$removeRows(chartKeywordsToRemove, dataSubClassNames, "chart")
 
-transformedData = TransformedData$new(rawData$cleanedFinalData)
+transformedData = TransformedData$new(rawData$cleanedFinalData$chart)
 transformedData$groupDataColumn(groupByColumn = "Year",
                                 groupType = "interval",
                                 newColumnName = "yearCombined",
@@ -80,7 +83,9 @@ for(i in 1:appData$appLayout$subTabs$number){
       sidebarChoicesNumber = appData$tabs$sidebarChoicesNumber[[i]],
       sidebarShownLabels = appData$tabs$sidebarShownLabels[[i]],
       dataSubClasses = rawData$dataSubClasses,
-      columnOptions = sapply(appData$tabs$columnOptions, "[[", i),
+      columnOptionsObject = ColumnOptionsObject$new(
+          appData$tabs$columnOptionsType[[i]],
+          sapply(appData$tabs$columnOptions, "[[", i)),
       columnTypes = appData$tabs$columnTypes[[i]]
     )
   } else if(tabType == "text") {

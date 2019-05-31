@@ -2,8 +2,7 @@ source('./R/helper_functions.R')
 source('./R/TabItemDash.R')
 source('./R/utils.R')
 source('./R/helper_functions.R')
-
-#source('../R/initialize.R')
+source('./R/ColumnOptionsObject.R')
 library(R6)
 library(shiny)
 
@@ -66,7 +65,7 @@ TabItemDashGraph <- R6Class(
       downloadLabel = "Download",
       pngDownloadName,
       dataSubClasses,
-      columnOptions,
+      columnOptionsObject,
       columnTypes
 
     ){
@@ -88,7 +87,8 @@ TabItemDashGraph <- R6Class(
       self$makeId("hiddenBox", "sidebarHiddenBoxIds", self$sidebarChoicesNumber)
       self$makeId("downloadInput", "downloadInputId")
       self$makeId("downloadOutput", "downloadOutputId")
-      self$generateSidebarChoices(columnNames = sidebarShownLabels, columnTypes, columnOptions, dataSubClasses)
+      self$generateSidebarChoices(columnNames = sidebarShownLabels, columnTypes,
+                                  columnOptionsObject, dataSubClasses)
     },
 
     makeRadioButtons = function(){
@@ -176,7 +176,9 @@ TabItemDashGraph <- R6Class(
       }
     },
 
-  generateSidebarChoices = function(columnNames, columnTypes, columnOptionsList, dataSubClasses){
+    #' @param columnOptions list of column options, where a columnOption is one of:
+    #' "generate", a list of option strings, or
+  generateSidebarChoices = function(columnNames, columnTypes, columnOptionsObject, dataSubClasses){
     if(!is.list(dataSubClasses)){
       stop("dataSubClasses must be a list containing objects of class DataSubClass")
     }
@@ -184,25 +186,16 @@ TabItemDashGraph <- R6Class(
     if(!"DataSubClass" %in% checkClass){
       stop("Objects in list must be of class DataSubClass")
     }
-    self$sidebarHiddenChoices = list()
     self$sidebarShownChoices = list()
     dataSubClassNames = names(dataSubClasses)
     i = 1
-    print(columnOptionsList)
-    for(columnOptions in columnOptionsList){
-      if(columnOptions == "generate"){
-        index = which(dataSubClassNames==columnTypes[i])
-        if(dataSubClasses[[index]]$hasPrettyOptions){
-            self$sidebarHiddenChoices = c(self$sidebarHiddenChoices, list(dataSubClasses[[index]]$prettyOptions))
-        } else {
-            self$sidebarHiddenChoices = c(self$sidebarHiddenChoices, list(dataSubClasses[[index]]$options))
-        }
+    self$sidebarHiddenChoices = columnOptionsObject$generateAllColumnOptions(dataSubClasses, columnTypes)
 
+    for(columnOptions in columnOptionsObject$columnOptionsList){
+      if(columnOptions == "generate"){
         self$sidebarShownChoices[[i]] = c("All", "Select")
         self$sidebarShownSelected = c(self$sidebarShownSelected, c("All"))
         self$sidebarHiddenSelected = c(self$sidebarHiddenSelected, c("All"))
-      } else {
-        self$sidebarHiddenChoices = c(self$sidebarHiddenChoices, list(columnOptions))
       }
       i = i + 1
     }
